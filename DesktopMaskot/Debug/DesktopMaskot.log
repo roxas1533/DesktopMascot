@@ -1,0 +1,7 @@
+﻿  main.cpp
+C:\Users\roxas1533\source\repos\DesktopMaskot\DesktopMaskot\MYBRUSH.h(6,1): warning C4005: 'WHITE_BRUSH': マクロが再定義されました。
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um\wingdi.h(1907): message : 'WHITE_BRUSH' の以前の定義を確認してください
+C:\Users\roxas1533\source\repos\DesktopMaskot\DesktopMaskot\Fukidasi.h(22,36): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
+C:\Users\roxas1533\source\repos\DesktopMaskot\DesktopMaskot\Fukidasi.h(23,35): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
+C:\Users\roxas1533\source\repos\DesktopMaskot\DesktopMaskot\main.cpp(13,14): warning C4101: 'ps': ローカル変数は 1 度も使われていません。
+  DesktopMaskot.vcxproj -> C:\Users\roxas1533\source\repos\DesktopMaskot\Debug\DesktopMaskot.exe

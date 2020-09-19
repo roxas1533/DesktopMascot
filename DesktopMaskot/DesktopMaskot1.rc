@@ -1,0 +1,68 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource2.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 日本語 (日本) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE
+BEGIN
+"resource2.h\0"
+END
+
+2 TEXTINCLUDE
+BEGIN
+"#include ""winres.h""\r\n"
+"\0"
+END
+
+3 TEXTINCLUDE
+BEGIN
+"\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+yukari MENU DISCARDABLE
+	BEGIN
+		POPUP "表示されません"
+		BEGIN
+			POPUP "通知を一時停止"
+			BEGIN
+				MENUITEM "10分", 40002
+				MENUITEM "30分", 40003
+				MENUITEM "1時間", 40004
+				MENUITEM "次に起動するまで", 40005
+			END
+			MENUITEM "終了", 40006
+			MENUITEM "最小化", 40007
+		END
+	END
+
+#endif    // 日本語 (日本) resources
+/////////////////////////////////////////////////////////////////////////////
