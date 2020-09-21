@@ -32,13 +32,19 @@
     <ClInclude Include="tex.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="strconv.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="body.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Fukidasi.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="rand.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="myfunc.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomButton.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -49,6 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Debug\nc179809.png">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="yuka.ico">
       <Filter>リソース ファイル</Filter>
     </Image>
   </ItemGroup>

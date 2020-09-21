@@ -54,22 +54,49 @@ inline void getTex(std::vector<std::vector<std::vector<Gdiplus::Bitmap*>>>& tex)
 	std::vector<std::string> filename;
 	std::string nam = "C:\\Users\\roxas1533\\Downloads\\yukari\\yukari\\png";
 	getFileNmaes(nam, filename);
-	bool flag = false;
 	for (auto name : filename) {
 		std::vector<std::vector<Gdiplus::Bitmap*>> temp;
 		std::vector<Gdiplus::Bitmap*> temp2;
 		std::vector<std::string> pngname;
 		getFileNmaes(name, pngname);
+		bool start = false;
+		bool flag = false;
+
 		for (auto n : pngname) {
-			temp2.push_back(getFileIStream(n.c_str()));
-			if ('a' <= n[n.size() - 5] && 'z' >= n[n.size() - 5]) {
+			//std::cout << n<<"\n";
+;			if ('a' <= n[n.size() - 5] && 'z' >= n[n.size() - 5]) {
+				temp2.push_back(getFileIStream(n.c_str()));
+				flag = true;
 				continue;
 			}
-			temp.push_back(temp2);
-			temp2.clear();
+			if (flag) {
+				temp.push_back(temp2);
+				temp2.clear();
+				temp2.push_back(getFileIStream(n.c_str()));
+				flag = false;
+			}
+			else {
+				if (start&&!temp2.empty()) {
+					temp.push_back(temp2);
+					temp2.clear();
+				}
+				temp2.push_back(getFileIStream(n.c_str()));
+				if (start&& !temp2.empty()) {
+					temp.push_back(temp2);
+					temp2.clear();
+				}
+			}
+			start = true;
+
 		}
+		//temp2.clear();
+		//std::cout << pngname[pngname.size() - 1].c_str()<<"\n";
+		//temp2.push_back(getFileIStream(pngname[pngname.size()-1].c_str()));
+		temp.push_back(temp2);
 		tex.push_back(temp);
 	}
+	//for(int i=0; i<tex[OTHER].size(); i++)
+	//std::cout << tex[OTHER][i].size()<<"\n";
 }
 
 inline void getTexF(Gdiplus::Bitmap* tex) {

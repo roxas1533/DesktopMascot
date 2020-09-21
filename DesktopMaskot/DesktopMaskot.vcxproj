@@ -145,11 +145,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="body.h" />
+    <ClInclude Include="CustomButton.h" />
     <ClInclude Include="Fukidasi.h" />
     <ClInclude Include="loadPng.h" />
     <ClInclude Include="MYBRUSH.h" />
+    <ClInclude Include="rand.h" />
     <ClInclude Include="resource2.h" />
-    <ClInclude Include="strconv.h" />
+    <ClInclude Include="myfunc.h" />
     <ClInclude Include="tex.h" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Debug\nc179809.png" />
+    <Image Include="yuka.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

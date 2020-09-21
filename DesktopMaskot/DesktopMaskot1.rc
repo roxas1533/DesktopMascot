@@ -25,44 +25,58 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE
+1 TEXTINCLUDE 
 BEGIN
-"resource2.h\0"
+    "resource2.h\0"
 END
 
-2 TEXTINCLUDE
+2 TEXTINCLUDE 
 BEGIN
-"#include ""winres.h""\r\n"
-"\0"
+    "#include ""winres.h""\r\n"
+    "\0"
 END
 
-3 TEXTINCLUDE
+3 TEXTINCLUDE 
 BEGIN
-"\0"
+    "\0"
 END
 
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+YICO                    ICON                    "yuka.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-yukari MENU DISCARDABLE
-	BEGIN
-		POPUP "表示されません"
-		BEGIN
-			POPUP "通知を一時停止"
-			BEGIN
-				MENUITEM "10分", 40002
-				MENUITEM "30分", 40003
-				MENUITEM "1時間", 40004
-				MENUITEM "次に起動するまで", 40005
-			END
-			MENUITEM "終了", 40006
-			MENUITEM "最小化", 40007
-		END
-	END
+YUKARI MENU
+BEGIN
+    POPUP "表示されません"
+    BEGIN
+        POPUP "通知を一時停止"
+        BEGIN
+            MENUITEM "10分",                         40002
+            MENUITEM "30分",                         40003
+            MENUITEM "1時間",                         ID_40004
+            MENUITEM "次に起動するまで",                    40005
+        END
+        MENUITEM "終了",                          40006
+        MENUITEM "最小化",                         40007
+        MENUITEM "メニュー",                        ID_40004
+    END
+END
 
 #endif    // 日本語 (日本) resources
 /////////////////////////////////////////////////////////////////////////////
+
+
