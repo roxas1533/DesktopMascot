@@ -4,14 +4,16 @@
 #include "Fukidasi.h"
 #include <list>
 #include <time.h>
+#include <memory>
 using namespace Gdiplus;
+
 
 class yukari {
 public:
 	yukari() {
 		decrate = randRange(-6, 6);
 	}
-	void main(Graphics* g, HDC hdcMem,HWND hwndd) {
+	void main(Graphics* g, HDC hdcMem, HWND hwndd) {
 		if (time == 0) {
 			flink[0] = randRange(0, time + 200);
 			getTex(tex);
@@ -19,29 +21,28 @@ public:
 			hwnd = hwndd;
 			//テスト用吹き出し
 			//fuki.push_back(Fukidasi());
-
-	
 		}
 
 		zihou(hdcMem);
 		//std::cout << fuki.size();
-		std::list<Fukidasi>::iterator it = fuki.begin();
+		std::list<std::unique_ptr<Fukidasi>>::iterator it = fuki.begin();
 		while (it != fuki.end()) {
-			if (it->drawFuki(g, hdcMem)) {
+			if ((*it)->drawFuki(g, hdcMem)) {
 				nowTalking = false;
 				normal(g);
-				CustomButton::destroyFlag=true;
+				CustomButton::destroyFlag = true;
 				it = fuki.erase(it);
+				InvalidateRect(hwnd, &rec2, TRUE);
 			}
 			else {
 				nowTalking = true;
-				switch (it->emotion)
+				switch ((*it)->emotion)
 				{
 				case NORMAL:
-					tNormal(g, it->body, it->dec, it->eye);
+					tNormal(g, (*it)->body, (*it)->dec, (*it)->eye);
 					break;
 				case BOTH:
-					tBoth(g, it->body, it->dec, it->eye);
+					tBoth(g, (*it)->body, (*it)->dec, (*it)->eye);
 				default:
 					break;
 				}
@@ -117,43 +118,67 @@ public:
 			text = "";
 		}
 		if (strcmp(text.c_str(), ""))
-			fuki.push_back(Fukidasi(text, hdcMem, emo, 80));
+			fuki.push_back(std::make_unique<Fukidasi>(text, hdcMem, emo, 80));
 	}
 
 	void zihou(HDC hdcMem) {
-		SYSTEMTIME pnow = timeCheck();
 		std::string text = "これは時報のバグです！";
 		EMO emo = NORMAL;
 		//std::cout << pnow.wHour <<":"<< pnow.wMinute << ":"<< pnow.wSecond<<":"<< pnow.wMilliseconds <<"\n";
 
-		if (pnow.wHour == 12 && pnow.wMinute == 0 && pnow.wSecond == 00 && !flag[0]) {
+		if (checkTime(12, 0, 0)) {
 			text = "12時です！ごはんの準備です！";
 			flag[0] = true;
 		}
-		else if (pnow.wHour == 18 && pnow.wMinute == 00 && pnow.wSecond == 00 && !flag[1]) {
+		else if (checkTime(18, 0, 1)) {
 			text = "18時です！ごはん...食べたいです..";
 			flag[1] = true;
 		}
-		else if (pnow.wHour == 00 && pnow.wMinute == 00 && pnow.wSecond == 00 && !flag[2]) {
+		else if (checkTime(0, 0, 2)) {
 			text = "日付、変わりましたよ！";
 			flag[2] = true;
 		}
-		else if (pnow.wHour == 01 && pnow.wMinute == 30 && pnow.wSecond == 00 && !flag[2]) {
+		else if (checkTime(1, 30, 3)) {
 			emo = BOTH;
-			text = "一時半です！そろそろ寝てください！";
-			flag[2] = true;
+			text = "1時半です！そろそろ寝てください！";
+			flag[3] = true;
+		}
+		else if (checkTime(8, 50, 4)) {
+			text = "1限がはじまりますよ！";
+			flag[4] = true;
+		}
+		else if (checkTime(10, 40, 5)) {
+			text = "2限がはじまりますよ！";
+			flag[5] = true;
+		}
+		else if (checkTime(13, 10, 6)) {
+			text = "3限がはじまります！";
+			flag[6] = true;
+		}
+		else if (checkTime(15, 0, 7)) {
+			text = "4限がはじまります。おやつは、ありますか？";
+			flag[7] = true;
+		}
+		else if (checkTime(16, 56, 8,10)) {
+			text = "5限がはじまります。最後です！";
+			flag[8] = true;
 		}
 		else {
 			text = "";
 		}
 		if (strcmp(text.c_str(), "")) {
-			fuki.push_back(Fukidasi(text, hdcMem, emo, 80));
+			fuki.push_back(std::make_unique<Fukidasi>(text, hdcMem, emo, 80));
 		}
-		if (pnow.wHour == 3 && pnow.wMinute == 00 && pnow.wSecond == 00) {
+		if (checkTime(3, 0, 100)) {
 			for (int i = 0; i < 100; i++) {
 				flag[i] = false;
 			}
 		}
+	}
+
+	bool checkTime(int h, int m, int flagNum, int s = 0) {
+		SYSTEMTIME pnow = timeCheck();
+		return pnow.wHour == h && pnow.wMinute == m && pnow.wSecond == s && !flag[flagNum];
 	}
 
 	SYSTEMTIME timeCheck() {
@@ -161,7 +186,7 @@ public:
 		GetLocalTime(&sys);
 		return sys;
 	}
-	std::list<Fukidasi> fuki;
+	std::list<std::unique_ptr<Fukidasi>> fuki;
 
 private:
 	std::vector<std::vector<std::vector<Bitmap*>>> tex;

@@ -12,7 +12,7 @@ public:
 		bHwnd = CreateWindow(
 			TEXT("BUTTON"), NULL,
 			WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
-			95 + x, y, 270, h,
+			95 + x, y, 180, h,
 			hwnd, (HMENU)(LONG64)id, hInst_, NULL
 		);
 		DefaultButtonProc = (WNDPROC)GetWindowLong(bHwnd, GWL_WNDPROC);
@@ -80,7 +80,7 @@ public:
 			);
 			PAINTSTRUCT ps;
 			HDC hDC = BeginPaint(hWnd, &ps);
-			HDC hdc_mem = CreateCompatibleDC(hDC);
+			//HDC hdc_mem = CreateCompatibleDC(hDC);
 			SelectObject(hDC, hFont);
 			//デバッグ用背景
 
@@ -92,8 +92,8 @@ public:
 			SetTextColor(hDC, RGB(0, 0, 255));
 			DrawText(hDC, TEXT(text.c_str()), -1, &size, DT_WORDBREAK);
 
-			BitBlt(hDC, 0, 0, size.right, size.bottom, hdc_mem, 0, 0, SRCAND);
-			DeleteDC(hdc_mem);
+			//BitBlt(hDC, 0, 0, size.right, size.bottom, hdc_mem, 0, 0, SRCAND);
+			//DeleteDC(hdc_mem);
 			EndPaint(hWnd, &ps);
 			DeleteObject(hFont);
 		}

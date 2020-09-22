@@ -17,14 +17,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	RECT rc;
 	POINT po;
 	static HBITMAP hBitmap = NULL;
-	static HDC     hdcMem;
-	static HMENU tmp, hmenuR = NULL;
+	static HDC     hdcMem, hdc;
 	static BOOL blRight = TRUE;
+	static HMENU hmenuR;
 	static HICON hIcon;
+	static RECT rec = { 270, 0, WIDTH, HEIGHT };
+
 	static NOTIFYICONDATA nid = { 0 };
 	HGDIOBJ hb;
-	HFONT hFont;
+	static HFONT hFont = CreateFont(
+		22, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
+		SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+		VARIABLE_PITCH | FF_ROMAN, TEXT("たいぷ")
+	);
 	Gdiplus::Graphics* g;
+	static COLORREF crEditBox, crListBox;
+	static HBRUSH hbrEditBox, hbrListBox;
+	static COMBOBOXINFO cbi = { sizeof(COMBOBOXINFO) };
 
 	switch (msg) {
 	case WM_DESTROY:
@@ -32,11 +42,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		PostQuitMessage(0);
 		Shell_NotifyIcon(NIM_DELETE, &nid);
 		return 0;
-	case WM_CREATE:
-		HDC hdc;
-		tmp = LoadMenu(((LPCREATESTRUCT)(lp))->hInstance, TEXT("yukari"));
+	case WM_CREATE:{
+		HMENU tmp = LoadMenu(((LPCREATESTRUCT)(lp))->hInstance, TEXT("yukari"));
 		//アイコンロードとタスクトレイの設定
 		setIcon(nid, hIcon, lp, hwnd);
+
 		hmenuR = GetSubMenu(tmp, 0);
 		hdc = GetDC(hwnd);
 		GetClientRect(GetDesktopWindow(), &rc);  	// デスクトップのサイズを取得
@@ -46,21 +56,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		SetTimer(hwnd, 1, 33, NULL);
 
 		return 0;
+		}
 	case WM_TIMER:
-		InvalidateRect(hwnd, NULL, TRUE);
+		InvalidateRect(hwnd, &rec, TRUE);
 		return 0;
 	case WM_PAINT:
-		hFont = CreateFont(
-			22, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
-			SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS,
-			CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-			VARIABLE_PITCH | FF_ROMAN, TEXT("たいぷ")
-		);
 		PAINTSTRUCT ps;
 		hdc = BeginPaint(hwnd, &ps);
 		g = new Gdiplus::Graphics(hdcMem);
 		hb = SelectObject(hdcMem, BRACK_BRUSH);
-		//std::cout << ",SelectObject:" << hb;
 		Rectangle(hdcMem, -1, -1, WIDTH + 1, HEIGHT + 1);
 		DeleteObject(hb);
 		SelectObject(hdcMem, hFont);
@@ -76,6 +80,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		EndPaint(hwnd, &ps);
 		//std::cout << "\n";
 		//std::cout << GetLastError()<<"\n";
+		//std::cout<< SendMessage(
+		//	(HWND)bw,  // コンボボックスのハンドル
+		//	(UINT)CB_GETCURSEL,0,0);
 		delete(g);
 		return 0;
 	case WM_RBUTTONUP:
@@ -95,15 +102,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		}
 		else if (wp == 40004) {
 			CustomButton::destroyFlag = false;
-			y.fuki.push_back(Fukidasi());
+			y.fuki.push_back(std::make_unique<Fukidasi>(0));
+		}
+		else if (wp==1000) {
+			y.fuki.front()->time = 1;
+			y.fuki.push_back(std::make_unique<YoteiTuika>());
 		}
 		else if (wp == 1003) {
-			y.fuki.front().time = 1;
+			y.fuki.front()->time = 1;
 		}
-		std::cout << wp;
+		std::cout << wp<<"\n";
 		return 0;
 	case WM_ERASEBKGND:
 		return FALSE;
+	case CB_GETCURSEL:
+
+		break;
 	case WM_TASKTRAY:
 		if (wp == ID_TRAYICON) {       // アイコンの識別コード
 			switch (lp) {
@@ -185,3 +199,4 @@ void setIcon(NOTIFYICONDATA& nid, HICON& hIcon, LPARAM lp, HWND hwnd) {
 	nid.uCallbackMessage = WM_TASKTRAY;      // 通知メッセージの
 	lstrcpy(nid.szTip, TEXT("ゆかりさんますこっと"));       // チップヘルプの文字列
 }
+
