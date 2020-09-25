@@ -25,13 +25,13 @@ public:
 
 		zihou(hdcMem);
 		//std::cout << fuki.size();
-		std::list<std::unique_ptr<Fukidasi>>::iterator it = fuki.begin();
-		while (it != fuki.end()) {
+		std::list<std::unique_ptr<Fukidasi>>::iterator it = Fukidasi::fuki.begin();
+		while (it != Fukidasi::fuki.end()) {
 			if ((*it)->drawFuki(g, hdcMem)) {
 				nowTalking = false;
 				normal(g);
 				CustomButton::destroyFlag = true;
-				it = fuki.erase(it);
+				it = Fukidasi::fuki.erase(it);
 				InvalidateRect(hwnd, &rec2, TRUE);
 			}
 			else {
@@ -118,7 +118,7 @@ public:
 			text = "";
 		}
 		if (strcmp(text.c_str(), ""))
-			fuki.push_back(std::make_unique<Fukidasi>(text, hdcMem, emo, 80));
+			Fukidasi::fuki.push_back(std::make_unique<Fukidasi>(text, hdcMem, emo, 80));
 	}
 
 	void zihou(HDC hdcMem) {
@@ -159,7 +159,7 @@ public:
 			text = "4限がはじまります。おやつは、ありますか？";
 			flag[7] = true;
 		}
-		else if (checkTime(16, 56, 8,10)) {
+		else if (checkTime(16, 50, 8)) {
 			text = "5限がはじまります。最後です！";
 			flag[8] = true;
 		}
@@ -167,7 +167,7 @@ public:
 			text = "";
 		}
 		if (strcmp(text.c_str(), "")) {
-			fuki.push_back(std::make_unique<Fukidasi>(text, hdcMem, emo, 80));
+			Fukidasi::fuki.push_back(std::make_unique<Fukidasi>(text, hdcMem, emo, 80));
 		}
 		if (checkTime(3, 0, 100)) {
 			for (int i = 0; i < 100; i++) {
@@ -186,7 +186,6 @@ public:
 		GetLocalTime(&sys);
 		return sys;
 	}
-	std::list<std::unique_ptr<Fukidasi>> fuki;
 
 private:
 	std::vector<std::vector<std::vector<Bitmap*>>> tex;

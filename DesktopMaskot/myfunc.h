@@ -1,4 +1,6 @@
 #include <Windows.h>
+#ifndef MYFUNC
+#define MYFUNC
 
 inline void hideWindow(HWND hwnd) {
 	long style = GetWindowLong(hwnd, GWL_STYLE);
@@ -13,3 +15,4 @@ inline void showWindow(HWND hwnd) {
 	SetWindowLong(hwnd, GWL_STYLE, style);
 	SetWindowPos(hwnd, NULL, 0, 0, 0, 0, (SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED));
 }
+#endif // !MYFUNC

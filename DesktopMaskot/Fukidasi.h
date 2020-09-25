@@ -5,7 +5,7 @@
 #include <thread>
 #include "myfunc.h"
 #include "CustomButton.h"
-
+class yukari;
 static HWND hwnd;
 
 using namespace Gdiplus;
@@ -18,8 +18,8 @@ const int BO[] = { 3,4,12 };
 const int buttonNum = 4;
 const std::map<int, std::string> list[] = {
 	{{1000,"・予定確認"},{1001,"・予定追加"},{1002,"・今日のソーティ"},{1003,"キャンセル"}},
-	{{1004,"追加"},{1005,"キャンセル"}}
-	};
+	{{1004,"追加!"},{1005,"キャンセル"}}
+};
 enum EMO {
 	NORMAL = 0,
 	HAPPY,
@@ -61,12 +61,12 @@ void Yomiage(std::string te) {
 	delete[] cstr; // メモリ解放
 	::WaitForSingleObject(p.hProcess, INFINITE);
 	flag = false;
-
 }
-
 
 class Fukidasi {
 public:
+	Fukidasi(){}
+	virtual ~Fukidasi() {}
 	Fukidasi(std::string te, HDC hdcMem, EMO emo, int time = -1) :text(te), time(time), emotion(emo) {
 		size = { 90, 180, 290, 9999 };
 		int h = DrawText(hdcMem, TEXT(text.c_str()), -1, &size, DT_WORDBREAK | DT_CALCRECT);
@@ -74,62 +74,53 @@ public:
 		size = { 95, 202, 270, 202 + h };
 		body = randRange(0, 10);
 		dec = randRange(-9, 2);
-			switch (emo)
-			{
-			case NORMAL:
-				if (dec >= 0)
+		switch (emo)
+		{
+		case NORMAL:
+			if (dec >= 0)
 				dec = NO[dec];
-				break;
-			case BOTH:
-				if (dec >= 0)
+			break;
+		case BOTH:
+			if (dec >= 0)
 				dec = BO[dec];
-				eye = 27;
-				break;
-			default:
-				break;
-			}
-			
-			std::thread th1(Yomiage, te);
-			th1.detach();
-	}
-
-	Fukidasi(int pattern) {
-
-		time = -1;
-		CustomButton* b[buttonNum];
-		for (int i = 0; i < buttonNum; i++) {
-			CustomButton::create(hwnd, &b[i], list[pattern].at(1000+i), 0, 202 + i * 35,1000+i);
+			eye = 27;
+			break;
+		default:
+			break;
 		}
-		size = { 95, 202, 270, b[buttonNum - 1]->size.bottom };
-		i = (b[buttonNum - 1]->size.bottom+202 - 95 - 30) / 52;
-		body = randRange(0, 10);
-		emotion = NORMAL;
-		dec = randRange(-9, 2);
-		if (dec >= 0)
-			dec = NO[dec];
-		std::thread th1(Yomiage, "どうしましたか？");
+
+		std::thread th1(Yomiage, te);
 		th1.detach();
-	}
-	Fukidasi() {
 	}
 
 	virtual bool drawFuki(Graphics* g, HDC hdcMem) {
 		if (count == 0) {
+			constructor();
 			showWindow(hwnd);
 			InvalidateRect(hwnd, &rec2, TRUE);
-
+		}
+		if (CustomButton::cmpHash_.size() == 0) {
+			addButton();
 		}
 
-		g->DrawImage(tex, RectF(80, 150, 200, 52), 0, 0, 549, 144, UnitPixel);
-		for (int j = 0; j < i; j++)
-			g->DrawImage(tex, RectF(80, 202 + 52 * j, 200, 52), 0, 144, 549, 144, UnitPixel);
-		g->DrawImage(tex, RectF(80, 202 + i * 52, 200, 52), 0, 288, 549, 82, UnitPixel);
+		drawBack(g);
 		DrawText(hdcMem, TEXT(text.c_str()), -1, &size, DT_WORDBREAK);
 
 		time--;
 		count++;
 		return time == 0 ? true : false;
 	}
+
+	void drawBack(Graphics* g) {
+		g->DrawImage(tex, RectF(80, 150, 200, 52), 0, 0, 549, 144, UnitPixel);
+		for (int j = 0; j < i; j++)
+			g->DrawImage(tex, RectF(80, 202 + 52 * j, 200, 52), 0, 144, 549, 144, UnitPixel);
+		g->DrawImage(tex, RectF(80, 202 + i * 52, 200, 52), 0, 288, 549, 82, UnitPixel);
+	}
+
+	virtual void constructor() {}
+	virtual void addButton() {}
+	virtual void selectButton(int id,HDC hdcMem){}
 
 	long long nowTalking = 0;
 	RECT size;
@@ -141,11 +132,44 @@ public:
 	int eye;
 	int body;
 	int count = 0;
+	static std::list<std::unique_ptr<Fukidasi>> fuki;
+};
+std::list<std::unique_ptr<Fukidasi>> Fukidasi::fuki;
+
+class Menu :public Fukidasi {
+public:
+	Menu() {
+		time = -1;
+		body = randRange(0, 10);
+		emotion = NORMAL;
+		dec = randRange(-9, 2);
+		if (dec >= 0)
+			dec = NO[dec];
+		std::thread th1(Yomiage, "どうしましたか？");
+		th1.detach();
+	}
+
+	virtual void constructor() override{
+		if (fuki.front()->time > 1)
+			fuki.front()->time = 1;
+		CustomButton* b[buttonNum];
+		for (int i = 0; i < buttonNum; i++) {
+			CustomButton::create(hwnd, &b[i], list[0].at(1000 + i), 95, 202 + i * 35, 1000 + i);
+		}
+		size = { 95, 202, 270, b[buttonNum - 1]->size.bottom };
+		i = (b[buttonNum - 1]->size.bottom + 202 - 95 - 30) / 52;
+	}
+	virtual void addButton() {
+		CustomButton::destroyFlag = false;
+		CustomButton* b[buttonNum];
+		for (int i = 0; i < buttonNum; i++) {
+			CustomButton::create(hwnd, &b[i], list[0].at(1000 + i), 0, 202 + i * 35, 1000 + i);
+		}
+	}
 };
 
 class YoteiTuika :public Fukidasi {
-
-	HWND MO, DAY, H, Min;
+	HWND MO, DAY, H, Min,edit;
 	static inline HFONT hFont = CreateFont(
 		20, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
 		SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS,
@@ -154,44 +178,86 @@ class YoteiTuika :public Fukidasi {
 	);
 	HINSTANCE h;
 public:
-	YoteiTuika():h((HINSTANCE)(LONG64)GetWindowLong(hwnd, GWL_HINSTANCE)),MO(setSelectList(h,0,10)),
-		DAY(setSelectList(h, 1,90)), H(setSelectList(h, 0,170)), Min(setSelectList(h, 2,240)) {
-
+	YoteiTuika():h((HINSTANCE)(LONG64)GetWindowLong(hwnd, GWL_HINSTANCE)), MO(setSelectList(h, 0, 110, 230)),
+		DAY(setSelectList(h, 1, 200, 230)), H(setSelectList(h, 3, 110, 275)), Min(setSelectList(h, 2, 200, 275)),
+	edit(CreateWindowEx(0,TEXT("EDIT"), TEXT(""),WS_CHILD | WS_VISIBLE,15, 350, 270, 22, hwnd, (HMENU)12222, h, NULL)){
 		time = -1;
-		//CustomButton* b[buttonNum];
-		//for (int i = 0; i < list[pattern].size(); i++) {
-		//	CustomButton::create(hwnd, &b[i], list[pattern].at(1000 + i), 0, 202 + i * 35, 1000 + i);
-		//}
-		size = { 15, 190, 285,999};
-		i = (200+ 202 - 95 - 30) / 52;
+		
+		size = { 15, 190, 285,999 };
+		i = (200 + 202 - 95 - 30) / 52;
 		body = randRange(0, 10);
 		emotion = NORMAL;
 		dec = randRange(-9, 2);
+		SendMessage(edit,WM_SETFONT, (WPARAM)hFont22, MAKELPARAM(FALSE, 0));
 		if (dec >= 0)
 			dec = NO[dec];
 		std::thread th1(Yomiage, "予定ですね");
 		th1.detach();
 	}
-	virtual bool drawFuki(Graphics* g, HDC hdcMem) {
-		if (count == 0)
+	~YoteiTuika() override{
+		DestroyWindow(MO);
+		DestroyWindow(DAY);
+		DestroyWindow(H);
+		DestroyWindow(Min);
+		DestroyWindow(edit);
+	}
+	virtual bool drawFuki(Graphics* g, HDC hdcMem) override{
+		if (count == 0) {
 			showWindow(hwnd);
+			InvalidateRect(hwnd, &rec2, TRUE);
+		}
+		if (CustomButton::cmpHash_.size() == 0) {
+			addButton();
+		}
 
-		g->DrawImage(tex, RectF(0, 150, 300, 52), 0, 0, 549, 144, UnitPixel);
-		for (int j = 0; j < i; j++)
-			g->DrawImage(tex, RectF(0, 202 + 52 * j, 300, 52), 0, 144, 549, 144, UnitPixel);
-		g->DrawImage(tex, RectF(0, 202 + i * 52, 300, 52), 0, 288, 549, 82, UnitPixel);
-		DrawText(hdcMem, TEXT("予定追加"), -1, &size, DT_WORDBREAK|DT_CENTER);
+		drawBack(g);
+		DrawText(hdcMem, TEXT("予定追加"), -1, &size, DT_WORDBREAK | DT_CENTER);
+		DrawText(hdcMem, TEXT("\n\n             月     日\n時刻設定\n             時     分"), -1, &size, DT_WORDBREAK);
+		DrawText(hdcMem, TEXT("\n\n\n\n\n\n予定内容"), -1, &size, DT_WORDBREAK | DT_CENTER);
 		time--;
 		count++;
 		return time == 0 ? true : false;
 	}
+	virtual void drawBack(Graphics* g) {
+		g->DrawImage(tex, RectF(0, 150, 300, 52), 0, 0, 549, 144, UnitPixel);
+		for (int j = 0; j < i; j++)
+			g->DrawImage(tex, RectF(0, 202 + 52 * j, 300, 52), 0, 144, 549, 144, UnitPixel);
+		g->DrawImage(tex, RectF(0, 202 + i * 52, 300, 52), 0, 288, 549, 82, UnitPixel);
+	}
 
-	static HWND setSelectList(HINSTANCE l,int type,int x) {
+	void addButton() override{
+		CustomButton::destroyFlag = false;
+		CustomButton* b[buttonNum];
+		for (int i = 0; i < list[1].size(); i++) {
+			CustomButton::create(hwnd, &b[i], list[1].at(1004 + i), 40+i * 100, 450, 1004 + i);
+		}
+	}
+
+	void selectButton(int id,HDC hdcMem) override {
+		char buf[1000];
+		GetWindowText(edit, buf, 1000);
+		std::string s = buf;
+		int hour = SendMessage(H, CB_GETCURSEL, 0, 0) + 1;
+		int month= SendMessage(MO, CB_GETCURSEL,0,0)+1;
+		int day= SendMessage(DAY, CB_GETCURSEL,0,0)+1;
+		int min= SendMessage(Min, CB_GETCURSEL,0,0)+1;
+		if (hour == 0 || month == 0 || day == 0 || min == 0||s.empty()) {
+			std::thread th1(Yomiage, "空欄があります！");
+			th1.detach();
+		}
+		else {
+			Fukidasi::fuki.front()->time = 1;
+			std::string tex = std::to_string(month) + "月" + std::to_string(day) + "日の予定を追加しました！";
+			Fukidasi::fuki.push_back(std::make_unique<Fukidasi>(tex, hdcMem, NORMAL, 80));
+		}
+	}
+
+	static HWND setSelectList(HINSTANCE l, int type, int x, int y) {
 		HWND combo = CreateWindow(
 			TEXT("COMBOBOX"), NULL,
 			WS_CHILD | WS_VISIBLE | WS_VSCROLL | CBS_DROPDOWNLIST,
-			x, 230, 50, 100, hwnd, (HMENU)TUIKA,
-			l , NULL
+			x, y, 50, 100, hwnd, (HMENU)TUIKA,
+			l, NULL
 		);
 		switch (type)
 		{
@@ -204,7 +270,11 @@ public:
 				SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)TEXT(std::to_string(i).c_str()));
 			break;
 		case 2:
-			for (int i = 0; i <= 50; i+=10)
+			for (int i = 0; i <= 50; i += 10)
+				SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)TEXT(std::to_string(i).c_str()));
+			break;
+		case 3:
+			for (int i = 0; i <= 23; i++)
 				SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)TEXT(std::to_string(i).c_str()));
 			break;
 		default:

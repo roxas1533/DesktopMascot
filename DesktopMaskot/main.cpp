@@ -2,6 +2,7 @@
 #include "MYBRUSH.h"
 #include "loadPng.h"
 #include "resource2.h"
+#include "MYFONT.h"
 #include <gdiplustypes.h>
 #include "body.h"
 #pragma comment (lib,"Gdiplus.lib")
@@ -11,13 +12,16 @@
 const int WIDTH = 500, HEIGHT = 620;
 yukari y;
 void setIcon(NOTIFYICONDATA& nid, HICON& hIcon, LPARAM lp, HWND hwnd);
+ HBRUSH hbrEdit = NULL;
+ HBRUSH hbrEditBox, hbrListBox;
+ HDC hdcMem;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	PAINTSTRUCT ps;
 	RECT rc;
 	POINT po;
 	static HBITMAP hBitmap = NULL;
-	static HDC     hdcMem, hdc;
+	static HDC  hdc;
 	static BOOL blRight = TRUE;
 	static HMENU hmenuR;
 	static HICON hIcon;
@@ -25,24 +29,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 
 	static NOTIFYICONDATA nid = { 0 };
 	HGDIOBJ hb;
-	static HFONT hFont = CreateFont(
-		22, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
-		SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS,
-		CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-		VARIABLE_PITCH | FF_ROMAN, TEXT("たいぷ")
-	);
 	Gdiplus::Graphics* g;
 	static COLORREF crEditBox, crListBox;
-	static HBRUSH hbrEditBox, hbrListBox;
 	static COMBOBOXINFO cbi = { sizeof(COMBOBOXINFO) };
 
 	switch (msg) {
 	case WM_DESTROY:
 		DestroyWindow(hwnd);
 		PostQuitMessage(0);
+		DeleteObject(hFont22);
+		DeleteObject(hFont20);
 		Shell_NotifyIcon(NIM_DELETE, &nid);
 		return 0;
-	case WM_CREATE:{
+	case WM_CREATE: {
 		HMENU tmp = LoadMenu(((LPCREATESTRUCT)(lp))->hInstance, TEXT("yukari"));
 		//アイコンロードとタスクトレイの設定
 		setIcon(nid, hIcon, lp, hwnd);
@@ -56,7 +55,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		SetTimer(hwnd, 1, 33, NULL);
 
 		return 0;
-		}
+	}
 	case WM_TIMER:
 		InvalidateRect(hwnd, &rec, TRUE);
 		return 0;
@@ -67,7 +66,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		hb = SelectObject(hdcMem, BRACK_BRUSH);
 		Rectangle(hdcMem, -1, -1, WIDTH + 1, HEIGHT + 1);
 		DeleteObject(hb);
-		SelectObject(hdcMem, hFont);
+		SelectObject(hdcMem, hFont22);
 		SetTextColor(hdcMem, RGB(255, 255, 255));
 		SetBkMode(hdcMem, TRANSPARENT);
 		//デバッグ用ライン
@@ -75,7 +74,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		//Rectangle(hdcMem, 0, 202, 500, 205);
 		y.main(g, hdcMem, hwnd);
 		BitBlt(hdc, 0, 0, WIDTH, HEIGHT, hdcMem, 0, 0, SRCCOPY);
-		DeleteObject(hFont);
 		DeleteObject(hb);
 		EndPaint(hwnd, &ps);
 		//std::cout << "\n";
@@ -102,16 +100,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		}
 		else if (wp == 40004) {
 			CustomButton::destroyFlag = false;
-			y.fuki.push_back(std::make_unique<Fukidasi>(0));
+			Fukidasi::fuki.push_back(std::make_unique<Menu>());
 		}
-		else if (wp==1000) {
-			y.fuki.front()->time = 1;
-			y.fuki.push_back(std::make_unique<YoteiTuika>());
+		else if (wp == 1000) {
+			Fukidasi::fuki.front()->time = 1;
+			Fukidasi::fuki.push_back(std::make_unique<YoteiTuika>());
 		}
-		else if (wp == 1003) {
-			y.fuki.front()->time = 1;
+		else if (wp == 1003||wp==1005) {
+			Fukidasi::fuki.front()->time = 1;
 		}
-		std::cout << wp<<"\n";
+		else if(wp==1004){
+			Fukidasi::fuki.front()->selectButton(wp, hdcMem);
+		}
+		std::cout << wp << "\n";
 		return 0;
 	case WM_ERASEBKGND:
 		return FALSE;
@@ -180,10 +181,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		hInstance, NULL
 	);
 
-	SetLayeredWindowAttributes(hwnd, 0x00000000, 0, LWA_COLORKEY);
+	SetLayeredWindowAttributes(hwnd, 0x01000000, 0, LWA_COLORKEY);
 	SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_SHOWWINDOW);
 	if (hwnd == NULL) return 0;
-	while (GetMessage(&msg, NULL, 0, 0)) DispatchMessage(&msg);
+		while (GetMessage(&msg, NULL, 0, 0)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
 	FreeConsole();
 
 	return msg.wParam;
@@ -199,4 +203,3 @@ void setIcon(NOTIFYICONDATA& nid, HICON& hIcon, LPARAM lp, HWND hwnd) {
 	nid.uCallbackMessage = WM_TASKTRAY;      // 通知メッセージの
 	lstrcpy(nid.szTip, TEXT("ゆかりさんますこっと"));       // チップヘルプの文字列
 }
-

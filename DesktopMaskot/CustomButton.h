@@ -2,50 +2,47 @@
 #include <Windows.h>
 #include <string>
 #include <map>
+#include "MYFONT.h"
+#include <memory>
 class CustomButton {
 public:
 	CustomButton(HWND hwnd, std::string text, int x, int y,int id) :hInst_((HINSTANCE)(LONG64)GetWindowLong(hwnd, GWL_HINSTANCE)), text(text) {
-		size = { 95 + x,y,270 + x,y + 9999 };
+		size = {x,y,270 + x,y + 9999 };
+		SIZE temp;
+		GetTextExtentPoint32(GetDC(hwnd), TEXT(text.c_str()), lstrlen(TEXT(text.c_str())), &temp);
 
 		int h = DrawText(GetDC(hwnd), TEXT(text.c_str()), -1, &size, DT_WORDBREAK | DT_CALCRECT);
 
 		bHwnd = CreateWindow(
 			TEXT("BUTTON"), NULL,
 			WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
-			95 + x, y, 180, h,
+			x, y, temp.cx, h,
 			hwnd, (HMENU)(LONG64)id, hInst_, NULL
 		);
 		DefaultButtonProc = (WNDPROC)GetWindowLong(bHwnd, GWL_WNDPROC);
 		SetWindowLongPtr(bHwnd, GWL_WNDPROC, (LONG_PTR)(CustomButtonProc));
-		size = { 0,0,175 + x,h + 10 };
+		size = { 0,0,temp.cx + x,h + 10 };
 
 	}
-	DWORD getUniqueID() {
-		static DWORD id = 1000;
-		return id++;
-	}
 	static LRESULT CALLBACK CustomButtonProc(HWND hWnd, UINT mes, WPARAM wParam, LPARAM lParam) {
-		CustomButton* p = CustomButton::getObjPtr(hWnd);
+		std::shared_ptr<CustomButton> p = CustomButton::getObjPtr(hWnd);
 
 		// プロシージャ呼び出し
 		if (p) {
 			LRESULT res = p->localButtonProc(hWnd, mes, wParam, lParam);
 			// もしWM_DESTROYを捕まえたらボタンを消去する
-			//if (mes == WM_DESTROY) {
-			//	std::cout << "keisya";
-			//	std::map< HWND, CustomButton* >::iterator it = CustomButton::cmpHash_.find(hWnd);
-			//	if (it != CustomButton::cmpHash_.end()) {
-			//		DestroyWindow(it->second->bHwnd);
-			//		delete it->second;
-			//		CustomButton::cmpHash_.erase(it);
-			//	}
-			//}
+			if (mes == WM_DESTROY) {
+				std::map< HWND, std::shared_ptr<CustomButton> >::iterator it = CustomButton::cmpHash_.find(hWnd);
+				if (it != CustomButton::cmpHash_.end()) {
+					CustomButton::cmpHash_.erase(it);
+				}
+			}
 			return res;
 		}
 		return 0L;
 	}
-	static CustomButton* getObjPtr(HWND hWnd) {
-		std::map< HWND, CustomButton* >::iterator it = CustomButton::cmpHash_.find(hWnd);
+	static std::shared_ptr<CustomButton> getObjPtr(HWND hWnd) {
+		std::map< HWND, std::shared_ptr<CustomButton> >::iterator it = CustomButton::cmpHash_.find(hWnd);
 		if (it != CustomButton::cmpHash_.end())
 			return it->second;
 		return NULL;
@@ -70,22 +67,17 @@ public:
 		case WM_ERASEBKGND:
 			return FALSE;
 		case WM_PAINT: {
-			if (destroyFlag)
+			if (destroyFlag) {
 				DestroyWindow(bHwnd);
-			hFont = CreateFont(
-				20, 0, 0, 0, FW_BOLD, FALSE, TRUE, FALSE,
-				SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS,
-				CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-				VARIABLE_PITCH | FF_ROMAN, TEXT("たいぷ")
-			);
+			}
 			PAINTSTRUCT ps;
 			HDC hDC = BeginPaint(hWnd, &ps);
 			//HDC hdc_mem = CreateCompatibleDC(hDC);
-			SelectObject(hDC, hFont);
+			SelectObject(hDC, hFont20);
 			//デバッグ用背景
 
-		/*	SelectObject(hDC, GetStockObject(GRAY_BRUSH));
-			Rectangle(hDC, size.left, size.top, size.right, size.bottom);*/
+			SelectObject(hDC, GetStockObject(GRAY_BRUSH));
+			Rectangle(hDC, size.left, size.top, size.right, size.bottom);
 
 
 			SetBkMode(hDC, TRANSPARENT);
@@ -95,7 +87,6 @@ public:
 			//BitBlt(hDC, 0, 0, size.right, size.bottom, hdc_mem, 0, 0, SRCAND);
 			//DeleteDC(hdc_mem);
 			EndPaint(hWnd, &ps);
-			DeleteObject(hFont);
 		}
 		}
 
@@ -114,10 +105,10 @@ public:
 
 	HWND bHwnd;
 	WNDPROC  DefaultButtonProc;
-	static std::map<HWND, CustomButton*> cmpHash_;
+	static std::map<HWND, std::shared_ptr<CustomButton>> cmpHash_;
 	const HINSTANCE hInst_;
 	std::string text;
 	RECT size;
 	static inline  bool destroyFlag=false;
 };
-std::map<HWND, CustomButton*> CustomButton::cmpHash_;
+std::map<HWND,std::shared_ptr<CustomButton>> CustomButton::cmpHash_;
