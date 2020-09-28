@@ -150,6 +150,7 @@
     <ClInclude Include="loadPng.h" />
     <ClInclude Include="MYBRUSH.h" />
     <ClInclude Include="MYFONT.h" />
+    <ClInclude Include="Plan.h" />
     <ClInclude Include="rand.h" />
     <ClInclude Include="resource2.h" />
     <ClInclude Include="myfunc.h" />

@@ -6,13 +6,14 @@
 #include <memory>
 class CustomButton {
 public:
-	CustomButton(HWND hwnd, std::string text, int x, int y,int id) :hInst_((HINSTANCE)(LONG64)GetWindowLong(hwnd, GWL_HINSTANCE)), text(text) {
-		size = {x,y,270 + x,y + 9999 };
+	CustomButton(HWND hwnd, std::string text, int x, int y, int id) :hInst_((HINSTANCE)(LONG64)GetWindowLong(hwnd, GWL_HINSTANCE)), text(text) {
+		size = { x,y,270 + x,y + 9999 };
 		SIZE temp;
-		GetTextExtentPoint32(GetDC(hwnd), TEXT(text.c_str()), lstrlen(TEXT(text.c_str())), &temp);
-
+		HDC hdc = GetDC(hwnd);
+		HFONT hOldFont = (HFONT)SelectObject(hdc, hFont20);
+		GetTextExtentPoint32(hdc, TEXT(text.c_str()), lstrlen(TEXT(text.c_str())), &temp);
+		ReleaseDC(hwnd, hdc);
 		int h = DrawText(GetDC(hwnd), TEXT(text.c_str()), -1, &size, DT_WORDBREAK | DT_CALCRECT);
-
 		bHwnd = CreateWindow(
 			TEXT("BUTTON"), NULL,
 			WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
@@ -21,8 +22,8 @@ public:
 		);
 		DefaultButtonProc = (WNDPROC)GetWindowLong(bHwnd, GWL_WNDPROC);
 		SetWindowLongPtr(bHwnd, GWL_WNDPROC, (LONG_PTR)(CustomButtonProc));
-		size = { 0,0,temp.cx + x,h + 10 };
-
+		size = { x,y,temp.cx + x,y + h + 10 };
+		drawSize = { 0,0,temp.cx,h + 10 };
 	}
 	static LRESULT CALLBACK CustomButtonProc(HWND hWnd, UINT mes, WPARAM wParam, LPARAM lParam) {
 		std::shared_ptr<CustomButton> p = CustomButton::getObjPtr(hWnd);
@@ -48,8 +49,8 @@ public:
 		return NULL;
 	}
 
-	static void create(HWND hParentWnd, CustomButton** out, std::string text, int x, int y,int id) {
-		*out = new CustomButton(hParentWnd, text, x, y,id);
+	static void create(HWND hParentWnd, CustomButton** out, std::string text, int x, int y, int id) {
+		*out = new CustomButton(hParentWnd, text, x, y, id);
 		CustomButton::regist(*out);
 	}
 
@@ -73,16 +74,14 @@ public:
 			PAINTSTRUCT ps;
 			HDC hDC = BeginPaint(hWnd, &ps);
 			//HDC hdc_mem = CreateCompatibleDC(hDC);
-			SelectObject(hDC, hFont20);
 			//デバッグ用背景
-
+			SelectObject(hDC, hFont20);
 			SelectObject(hDC, GetStockObject(GRAY_BRUSH));
-			Rectangle(hDC, size.left, size.top, size.right, size.bottom);
-
+			Rectangle(hDC, 0, 0, drawSize.right, drawSize.bottom);
 
 			SetBkMode(hDC, TRANSPARENT);
 			SetTextColor(hDC, RGB(0, 0, 255));
-			DrawText(hDC, TEXT(text.c_str()), -1, &size, DT_WORDBREAK);
+			DrawText(hDC, TEXT(text.c_str()), -1, &drawSize, DT_WORDBREAK);
 
 			//BitBlt(hDC, 0, 0, size.right, size.bottom, hdc_mem, 0, 0, SRCAND);
 			//DeleteDC(hdc_mem);
@@ -100,7 +99,6 @@ public:
 	}
 
 	void eraseMe() {
-
 	}
 
 	HWND bHwnd;
@@ -109,6 +107,7 @@ public:
 	const HINSTANCE hInst_;
 	std::string text;
 	RECT size;
-	static inline  bool destroyFlag=false;
+	RECT drawSize;
+	static inline  bool destroyFlag = false;
 };
-std::map<HWND,std::shared_ptr<CustomButton>> CustomButton::cmpHash_;
+std::map<HWND, std::shared_ptr<CustomButton>> CustomButton::cmpHash_;

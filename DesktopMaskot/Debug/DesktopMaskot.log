@@ -1,12 +1,18 @@
 ﻿  main.cpp
 C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\MYBRUSH.h(6,1): warning C4005: 'WHITE_BRUSH': マクロが再定義されました。
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um\wingdi.h(1907): message : 'WHITE_BRUSH' の以前の定義を確認してください
-C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\CustomButton.h(63,9): warning C4101: 'hFont2': ローカル変数は 1 度も使われていません。
-C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\CustomButton.h(62,9): warning C4101: 'hFont': ローカル変数は 1 度も使われていません。
-C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(117,36): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
-C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(118,35): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
-C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(224,35): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
-C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(225,34): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
-C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(231,21): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\CustomButton.h(64,9): warning C4101: 'hFont2': ローカル変数は 1 度も使われていません。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\CustomButton.h(63,9): warning C4101: 'hFont': ローカル変数は 1 度も使われていません。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(118,36): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(119,35): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(223,35): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(224,34): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(230,21): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(328,10): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(328,31): warning C4018: '>=': signed と unsigned の数値を比較しようとしました。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(341,35): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(342,34): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
 C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\main.cpp(20,14): warning C4101: 'ps': ローカル変数は 1 度も使われていません。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Plan.h(66): warning C4715: 'readPlan': 値を返さないコントロール パスがあります。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Plan.h(25): warning C4715: 'Plan::operator<': 値を返さないコントロール パスがあります。
   DesktopMaskot.vcxproj -> C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\Debug\DesktopMaskot.exe

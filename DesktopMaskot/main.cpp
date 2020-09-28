@@ -45,7 +45,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		HMENU tmp = LoadMenu(((LPCREATESTRUCT)(lp))->hInstance, TEXT("yukari"));
 		//アイコンロードとタスクトレイの設定
 		setIcon(nid, hIcon, lp, hwnd);
-
+		readPlan();
 		hmenuR = GetSubMenu(tmp, 0);
 		hdc = GetDC(hwnd);
 		GetClientRect(GetDesktopWindow(), &rc);  	// デスクトップのサイズを取得
@@ -59,7 +59,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	case WM_TIMER:
 		InvalidateRect(hwnd, &rec, TRUE);
 		return 0;
-	case WM_PAINT:
+	case WM_PAINT: {
 		PAINTSTRUCT ps;
 		hdc = BeginPaint(hwnd, &ps);
 		g = new Gdiplus::Graphics(hdcMem);
@@ -69,19 +69,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		SelectObject(hdcMem, hFont22);
 		SetTextColor(hdcMem, RGB(255, 255, 255));
 		SetBkMode(hdcMem, TRANSPARENT);
-		//デバッグ用ライン
+		//デバッグ用ラインx
 		//SelectObject(hdcMem, GREEN_BRUSH);
-		//Rectangle(hdcMem, 0, 202, 500, 205);
+		//Rectangle(hdcMem, 0, 335, 500, 340);
+		//デバッグ用ラインy
+		//SelectObject(hdcMem, GREEN_BRUSH);
+		//Rectangle(hdcMem, 95, 0, 100, 700);
 		y.main(g, hdcMem, hwnd);
 		BitBlt(hdc, 0, 0, WIDTH, HEIGHT, hdcMem, 0, 0, SRCCOPY);
 		DeleteObject(hb);
 		EndPaint(hwnd, &ps);
 		//std::cout << "\n";
 		//std::cout << GetLastError()<<"\n";
-		//std::cout<< SendMessage(
-		//	(HWND)bw,  // コンボボックスのハンドル
-		//	(UINT)CB_GETCURSEL,0,0);
 		delete(g);
+	}
 		return 0;
 	case WM_RBUTTONUP:
 		po.x = LOWORD(lp);
@@ -104,13 +105,28 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		}
 		else if (wp == 1000) {
 			Fukidasi::fuki.front()->time = 1;
+			if (plans.empty()) {
+				Fukidasi::fuki.push_back(std::make_unique<Fukidasi>("予定はありません！", hdcMem, NORMAL, 80));
+			}
+			Fukidasi::fuki.push_back(std::make_unique<YoteiCheck>());
+		}
+		else if (wp == 1001) {
+			Fukidasi::fuki.front()->time = 1;
 			Fukidasi::fuki.push_back(std::make_unique<YoteiTuika>());
 		}
-		else if (wp == 1003||wp==1005) {
+		else if (wp == 1003||wp==1005|| wp == 1007) {
 			Fukidasi::fuki.front()->time = 1;
 		}
 		else if(wp==1004){
 			Fukidasi::fuki.front()->selectButton(wp, hdcMem);
+		}
+		else if (wp == 1008) {
+			YoteiCheck::page++;
+			YoteiCheck::redrawButton();
+		}
+		else if (wp == 1006) {
+			YoteiCheck::page--;
+			YoteiCheck::redrawButton();
 		}
 		std::cout << wp << "\n";
 		return 0;
@@ -159,7 +175,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	FILE* fpOut = NULL;
 
 	freopen_s(&fpOut, "CONOUT$", "w", stdout);
-	std::cout << "読み込み完了";
 	winc.style = CS_HREDRAW | CS_VREDRAW;
 	winc.lpfnWndProc = WndProc;
 	winc.cbClsExtra = winc.cbWndExtra = 0;

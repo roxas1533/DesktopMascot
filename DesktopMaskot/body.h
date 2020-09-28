@@ -2,6 +2,7 @@
 #include <gdiplus.h>
 #include "loadPng.h"
 #include "Fukidasi.h"
+#include "Plan.h"
 #include <list>
 #include <time.h>
 #include <memory>
@@ -21,9 +22,15 @@ public:
 			hwnd = hwndd;
 			//テスト用吹き出し
 			//fuki.push_back(Fukidasi());
+			zikanwari = readZikan();
 		}
-
+		pnow = timeCheck();
 		zihou(hdcMem);
+		zikanwariCheck(hdcMem);
+		std::string tex;
+		if ((tex = checkPlans(pnow)) != "") {
+			Fukidasi::fuki.push_back(std::make_unique<Fukidasi>(tex + "、予定の時間です！", hdcMem, NORMAL, 80));
+		}
 		//std::cout << fuki.size();
 		std::list<std::unique_ptr<Fukidasi>>::iterator it = Fukidasi::fuki.begin();
 		while (it != Fukidasi::fuki.end()) {
@@ -102,7 +109,6 @@ public:
 	}
 
 	void wakeUp(HDC hdcMem) {
-		SYSTEMTIME pnow = timeCheck();
 		std::string text = "これはバグです！";
 		EMO emo = NORMAL;
 		if (pnow.wHour >= 4 && pnow.wHour <= 7) {
@@ -124,8 +130,6 @@ public:
 	void zihou(HDC hdcMem) {
 		std::string text = "これは時報のバグです！";
 		EMO emo = NORMAL;
-		//std::cout << pnow.wHour <<":"<< pnow.wMinute << ":"<< pnow.wSecond<<":"<< pnow.wMilliseconds <<"\n";
-
 		if (checkTime(12, 0, 0)) {
 			text = "12時です！ごはんの準備です！";
 			flag[0] = true;
@@ -143,26 +147,6 @@ public:
 			text = "1時半です！そろそろ寝てください！";
 			flag[3] = true;
 		}
-		else if (checkTime(8, 50, 4)) {
-			text = "1限がはじまりますよ！";
-			flag[4] = true;
-		}
-		else if (checkTime(10, 40, 5)) {
-			text = "2限がはじまりますよ！";
-			flag[5] = true;
-		}
-		else if (checkTime(13, 10, 6)) {
-			text = "3限がはじまります！";
-			flag[6] = true;
-		}
-		else if (checkTime(15, 0, 7)) {
-			text = "4限がはじまります。おやつは、ありますか？";
-			flag[7] = true;
-		}
-		else if (checkTime(16, 50, 8)) {
-			text = "5限がはじまります。最後です！";
-			flag[8] = true;
-		}
 		else {
 			text = "";
 		}
@@ -176,16 +160,44 @@ public:
 		}
 	}
 
+	void zikanwariCheck(HDC hdcMem) {
+		std::string text = "これは時報のバグです！";
+		EMO emo = NORMAL;
+		if (checkTime(8, 50, 4) && checkYoubi(1)) {
+			text = "1限がはじまりますよ！";
+			flag[4] = true;
+		}
+			else if (checkTime(10, 40, 5)&& checkYoubi(2)) {
+			text = "2限がはじまりますよ！";
+			flag[5] = true;
+		}
+			else if (checkTime(13, 10, 6) && checkYoubi(3)) {
+			text = "3限がはじまります！";
+			flag[6] = true;
+		}
+			else if (checkTime(15, 0, 7) && checkYoubi(4)) {
+			text = "4限がはじまります。おやつは、ありますか？";
+			flag[7] = true;
+		}
+			else if (checkTime(16, 50, 8) && checkYoubi(5)) {
+			text = "5限がはじまります。最後です！";
+			flag[8] = true;
+		}
+			else
+			text = "";
+		if (strcmp(text.c_str(), "")) {
+			Fukidasi::fuki.push_back(std::make_unique<Fukidasi>(text, hdcMem, emo, 80));
+		}
+	}
 	bool checkTime(int h, int m, int flagNum, int s = 0) {
-		SYSTEMTIME pnow = timeCheck();
 		return pnow.wHour == h && pnow.wMinute == m && pnow.wSecond == s && !flag[flagNum];
 	}
-
-	SYSTEMTIME timeCheck() {
-		SYSTEMTIME sys;
-		GetLocalTime(&sys);
-		return sys;
+	bool checkYoubi(int gen) {
+		if (pnow.wDayOfWeek == 0 || pnow.wDayOfWeek == 6)
+			return false;
+		return zikanwari[gen-1][pnow.wDayOfWeek-1];
 	}
+
 
 private:
 	std::vector<std::vector<std::vector<Bitmap*>>> tex;
@@ -194,4 +206,7 @@ private:
 	bool nowTalking = false;
 	long long flink[2] = { 0 ,0 };
 	int decrate = 0;
+	SYSTEMTIME pnow;
+	std::vector<std::vector<bool>> zikanwari;
+
 };
