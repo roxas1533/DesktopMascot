@@ -53,7 +53,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		hdcMem = CreateCompatibleDC(NULL);		// カレントスクリーン互換
 		SelectObject(hdcMem, hBitmap);		// MDCにビットマップを割り付け
 		SetTimer(hwnd, 1, 33, NULL);
-
+		getTranslate(translate);
 		return 0;
 	}
 	case WM_TIMER:
@@ -107,12 +107,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 			Fukidasi::fuki.front()->time = 1;
 			if (plans.empty()) {
 				Fukidasi::fuki.push_back(std::make_unique<Fukidasi>("予定はありません！", hdcMem, NORMAL, 80));
-			}
+			}else
 			Fukidasi::fuki.push_back(std::make_unique<YoteiCheck>());
 		}
 		else if (wp == 1001) {
 			Fukidasi::fuki.front()->time = 1;
 			Fukidasi::fuki.push_back(std::make_unique<YoteiTuika>());
+		}
+		else if (wp == 1002) {
+			Fukidasi::fuki.front()->time = 1;
+			Fukidasi::fuki.push_back(std::make_unique<Sortie>());
 		}
 		else if (wp == 1003||wp==1005|| wp == 1007) {
 			Fukidasi::fuki.front()->time = 1;
@@ -128,7 +132,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 			YoteiCheck::page--;
 			YoteiCheck::redrawButton();
 		}
-		std::cout << wp << "\n";
+		//std::cout << wp << "\n";
 		return 0;
 	case WM_ERASEBKGND:
 		return FALSE;
@@ -195,7 +199,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		DISPLAY_SIZE.right - WIDTH, DISPLAY_SIZE.bottom - HEIGHT, WIDTH, HEIGHT, NULL, NULL,
 		hInstance, NULL
 	);
-
+	Sortie t;
 	SetLayeredWindowAttributes(hwnd, 0x01000000, 0, LWA_COLORKEY);
 	SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_SHOWWINDOW);
 	if (hwnd == NULL) return 0;

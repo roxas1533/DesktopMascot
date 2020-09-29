@@ -76,8 +76,8 @@ public:
 			//HDC hdc_mem = CreateCompatibleDC(hDC);
 			//デバッグ用背景
 			SelectObject(hDC, hFont20);
-			SelectObject(hDC, GetStockObject(GRAY_BRUSH));
-			Rectangle(hDC, 0, 0, drawSize.right, drawSize.bottom);
+			//SelectObject(hDC, GetStockObject(GRAY_BRUSH));
+			//Rectangle(hDC, 0, 0, drawSize.right, drawSize.bottom);
 
 			SetBkMode(hDC, TRANSPARENT);
 			SetTextColor(hDC, RGB(0, 0, 255));

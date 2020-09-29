@@ -1,4 +1,8 @@
 #include <Windows.h>
+#include <map>
+#include <fstream>
+#include <iostream>
+
 #ifndef MYFUNC
 #define MYFUNC
 
@@ -72,4 +76,21 @@ public:
 	}
 };
 
+
+inline void getTranslate(std::map< std::string, std::string>& t) {
+	std::ifstream ifs("trans.txt", std::ios::in);
+	if (!ifs)
+		return;
+	std::string tmp;
+	std::string str;
+	while (getline(ifs, tmp)) {
+		std::stringstream ss{ tmp };
+		std::string s;
+		std::string temp[2];
+		for (int i = 0; getline(ss, s, ','); i++) {
+			temp[i] = s;
+		}
+		t.insert(std::make_pair(temp[0], temp[1]));
+	}
+}
 #endif // !MYFUNC

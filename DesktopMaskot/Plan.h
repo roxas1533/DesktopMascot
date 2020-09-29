@@ -80,11 +80,11 @@ inline std::vector<std::vector<bool>> readZikan() {
 			z[j][i] = s == "true" ? true : false;
 		}
 	}
-	for (auto t : z) {
-		for (auto u : t)
-			std::cout << u;
-		std:: cout << "\n";
-	}
+	//for (auto t : z) {
+	//	for (auto u : t)
+	//		std::cout << u;
+	//	std:: cout << "\n";
+	//}
 	return z;
 }
 

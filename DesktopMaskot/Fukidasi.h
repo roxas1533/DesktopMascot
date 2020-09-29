@@ -6,10 +6,13 @@
 #include <thread>
 #include "myfunc.h"
 #include "CustomButton.h"
+#include <regex>
+#include "httpGet.h"
+#include <srell2_800/srell.hpp>
+using namespace Gdiplus;
 class yukari;
 static HWND hwnd;
-
-using namespace Gdiplus;
+std::map< std::string, std::string> translate;
 std::string nam = "C:\\Users\\roxas1533\\Downloads\\yukari\\yukari\\5313.png";
 Bitmap* tex = getFileIStream(nam.c_str());
 RECT rec2 = { 0, 0, 270, 650 };
@@ -154,7 +157,6 @@ public:
 		if (fuki.front()->time > 1)
 			fuki.front()->time = 1;
 		addButton();
-
 	}
 	virtual void addButton() {
 		CustomButton::destroyFlag = false;
@@ -163,7 +165,7 @@ public:
 			CustomButton::create(hwnd, &b[i], list[0].at(1000 + i), 95, 202 + i * 35, 1000 + i);
 		}
 		size = { 95, 202, 270, b[buttonNum - 1]->size.bottom };
-		i = (b[buttonNum - 1]->size.bottom- 150 - 30) / 52;
+		i = (b[buttonNum - 1]->size.bottom - 150 - 30) / 52;
 	}
 };
 
@@ -248,7 +250,6 @@ public:
 			th1.detach();
 			return;
 		}
-		std::cout << month << "月" << day << "日" << hour << "時" << min << "分" << "\n";
 		Fukidasi::fuki.front()->time = 1;
 		std::string tex = std::to_string(month) + "月" + std::to_string(day) + "日の予定を追加しました！";
 		Fukidasi::fuki.push_back(std::make_unique<Fukidasi>(tex, hdcMem, NORMAL, 80));
@@ -325,10 +326,10 @@ public:
 		SelectObject(hdcMem, GREEN_BRUSH);
 
 		for (auto [i, p] : with_index(plans)) {
-			if (i < (page + 1) * 4&& i >= page  * 4) {
-				Rectangle(hdcMem, 25, s[i- page * 4].bottom, 275, s[i- page * 4].bottom + 4);
+			if (i < (page + 1) * 4 && i >= page * 4) {
+				Rectangle(hdcMem, 25, s[i - page * 4].bottom, 275, s[i - page * 4].bottom + 4);
 				std::string tex = std::to_string(p.month) + "月" + std::to_string(p.day) + "日" + std::to_string(p.hour) + "時" + std::to_string(p.min) + "分";
-				DrawText(hdcMem, TEXT(std::string(tex + "\n" + p.text).c_str()), -1, &s[i- page * 4], DT_WORDBREAK);
+				DrawText(hdcMem, TEXT(std::string(tex + "\n" + p.text).c_str()), -1, &s[i - page * 4], DT_WORDBREAK);
 			}
 		}
 		time--;
@@ -343,11 +344,6 @@ public:
 	}
 	void addButton() override {
 		CustomButton::destroyFlag = false;
-		std::cout << "予定数:" << plans.size()<<"\n";
-		std::cout << "ページ数:" << page<<"\n";
-		std::cout << "arere" << plans.size() - page * 4 <<"\n";
-
-
 		if (plans.size() - page * 4 > 4) {
 			CustomButton* next;
 			CustomButton::create(hwnd, &next, "次へ", 210, 450, 1008);
@@ -358,11 +354,10 @@ public:
 		}
 		CustomButton* ok;
 		CustomButton::create(hwnd, &ok, "確認", 140, 450, 1007);
-		
 	}
 
 	static void redrawButton() {
-		for(auto b:CustomButton::cmpHash_)
+		for (auto b : CustomButton::cmpHash_)
 			ShowWindow(b.second->bHwnd, SW_HIDE);
 		InvalidateRect(hwnd, &rec2, TRUE);
 		Fukidasi::fuki.front()->addButton();
@@ -370,4 +365,73 @@ public:
 	inline static int page = 0;
 private:
 	std::vector<RECT> s;
+};
+
+class Sortie :public Fukidasi {
+public:
+	Sortie() {
+		i = (277) / 52;
+		body = randRange(0, 10);
+		emotion = NORMAL;
+		dec = randRange(-9, 2);
+		json data = getHttp();
+		for (auto [i,sortie] : with_index(data["variants"])) {
+			srell::smatch smatch;
+			srell::regex re(R"((?<=\().*(?=\)))");
+			srell::regex dub(R"((?<=").*(?="))");
+
+			std::string pl = sortie["node"].dump();
+			if (srell::regex_search(pl, smatch, re))
+				planet[i] =  translate[smatch[0]];
+			pl = sortie["missionType"].dump();
+			if (srell::regex_search(pl, smatch, dub))
+				mission[i] = translate[smatch[0]];
+			pl = sortie["modifier"].dump();
+			if (srell::regex_search(pl, smatch, dub))
+				modifier[i] = translate[smatch[0]];
+		}
+		//for (int i = 0; i < 3; i++) {
+		//	std::cout << planet[i] << "," << mission[i] << "," << modifier[i] << "\n";
+		//}
+	}
+	void addButton() override {
+		CustomButton::destroyFlag = false;
+			CustomButton* ok;
+			CustomButton::create(hwnd, &ok, "確認", 130, 450, 1007);
+	}
+	virtual bool drawFuki(Graphics* g, HDC hdcMem) override {
+		if (count == 0) {
+			showWindow(hwnd);
+			InvalidateRect(hwnd, &rec2, TRUE);
+		}
+		if (CustomButton::cmpHash_.size() == 0) {
+			addButton();
+		}
+
+		drawBack(g);
+		for (int i = 0; i < 3; i++) {
+			size = { 15, 190 + i * 80, 285,999 };
+			std::string te = std::to_string(i+1)+". "+planet[i] + " : " + mission[i];
+			std::string te2 ="\n"+modifier[i];
+			DrawText(hdcMem, TEXT(te.c_str()), -1, &size, DT_WORDBREAK);
+			DrawText(hdcMem, TEXT(te2.c_str()), -1, &size, DT_WORDBREAK);
+		}
+		
+		time--;
+		count++;
+		return time == 0 ? true : false;
+	}
+
+	virtual void drawBack(Graphics* g) override {
+		g->DrawImage(tex, RectF(0, 150, 300, 52), 0, 0, 549, 144, UnitPixel);
+		for (int j = 0; j < i; j++)
+			g->DrawImage(tex, RectF(0, 202 + 52 * j, 300, 52), 0, 144, 549, 144, UnitPixel);
+		g->DrawImage(tex, RectF(0, 202 + i * 52, 300, 52), 0, 288, 549, 82, UnitPixel);
+	}
+private:
+	std::string planet[3];
+	std::string mission[3];
+	std::string modifier[3];
+	std::string faction;
+	std::string boss;
 };
