@@ -143,10 +143,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="aitalk_wrapper.cpp" />
     <ClCompile Include="httpGet.h" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aitalk_AIAudio.h" />
+    <ClInclude Include="aitalk_AITalk.h" />
+    <ClInclude Include="aitalk_wrapper.h" />
     <ClInclude Include="body.h" />
     <ClInclude Include="CustomButton.h" />
     <ClInclude Include="Fukidasi.h" />

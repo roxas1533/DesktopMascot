@@ -2,10 +2,12 @@
 #include <map>
 #include <fstream>
 #include <iostream>
-
+#include "aitalk_wrapper.h"
 #ifndef MYFUNC
 #define MYFUNC
-
+std::vector<int16_t> speech;
+HWAVEOUT hwo = { 0 };
+WAVEHDR hdr;
 inline void hideWindow(HWND hwnd) {
 	long style = GetWindowLong(hwnd, GWL_STYLE);
 	style &= ~(WS_VISIBLE);
@@ -42,7 +44,7 @@ template<typename Iterator>
 class withIndexItrator :public Iterator {
 	std::size_t i = 0;
 public:
-	withIndexItrator(Iterator iter): Iterator(iter){ }
+	withIndexItrator(Iterator iter) : Iterator(iter) { }
 	auto& operator ++()
 	{
 		++i;
@@ -76,7 +78,6 @@ public:
 	}
 };
 
-
 inline void getTranslate(std::map< std::string, std::string>& t) {
 	std::ifstream ifs("trans.txt", std::ios::in);
 	if (!ifs)
@@ -92,5 +93,10 @@ inline void getTranslate(std::map< std::string, std::string>& t) {
 		}
 		t.insert(std::make_pair(temp[0], temp[1]));
 	}
+}
+
+inline void talk(std::string& text,AITalkWrapper & aitalk) {
+
+
 }
 #endif // !MYFUNC

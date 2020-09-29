@@ -3,7 +3,6 @@
 #include "loadPng.h"
 #include "rand.h"
 #include "Plan.h"
-#include <thread>
 #include "myfunc.h"
 #include "CustomButton.h"
 #include <regex>
@@ -31,40 +30,29 @@ enum EMO {
 	BOTH,
 };
 bool flag = false;
+AITalkWrapper aitalk;
 void Yomiage(std::string te) {
-	std::string vpath = "C:\\Users\\roxas1533\\source\\repos\\roxas1533\\DesktopMascot\\Debug\\Vsay.exe ";
-	vpath += te + " -p 1.4 -v 2.0 -s 1.19";
-	char* cstr = new char[vpath.size() + 1]; // メモリ確保
+	std::string kana;
+	aitalk.textToKana(te, &kana);
+	aitalk.kanaToSpeech(kana, &speech);
+	if (speech.empty() == false) {
+		WAVEFORMATEX format;
+		format.wFormatTag = WAVE_FORMAT_PCM;
+		format.nChannels = 1;
+		format.nSamplesPerSec = 44100;
+		format.nAvgBytesPerSec = 44100 * 2;
+		format.nBlockAlign = 2;
+		format.wBitsPerSample = 16;
+		format.cbSize = 52428;
+		waveOutOpen(&hwo, WAVE_MAPPER, &format, (DWORD_PTR)hwnd, 0, CALLBACK_WINDOW);
 
-	strcpy_s(cstr, vpath.size() + 1, vpath.c_str());        // コピー
-	PROCESS_INFORMATION p;
-	STARTUPINFO s;
-	ZeroMemory(&s, sizeof(s));
-	s.cb = sizeof(s);
-	while (1) {
-		if (!flag)
-		{
-			//TerminateProcess(p.hProcess, 0);
-			break;
-		}
+		hdr.lpData = (LPSTR)speech.data();
+		hdr.dwBufferLength = speech.size() * 2;
+		hdr.dwFlags = 0;
+		waveOutPrepareHeader(hwo, &hdr, sizeof(WAVEHDR));
+		waveOutWrite(hwo, &hdr, sizeof(WAVEHDR));
 	}
-	flag = true;
-	//std::cout<<"待ち"<<WaitForSingleObject(process.hProcess, INFINITE)<<"\n";
-	CreateProcess(
-		NULL, // 実行可能モジュールの名
-		cstr, // コマンドラインの文字列
-		NULL, // セキュリティ記述子
-		NULL,// セキュリティ記述子
-		FALSE, // ハンドルの継承オプション
-		NULL, // 作成のフラグ
-		NULL,// 新しい環境ブロック
-		NULL, // カレントディレクトリの名前
-		&s, // スタートアップ情報
-		&p // プロセス情報
-	);
-	delete[] cstr; // メモリ解放
-	::WaitForSingleObject(p.hProcess, INFINITE);
-	flag = false;
+
 }
 
 class Fukidasi {
@@ -93,8 +81,7 @@ public:
 			break;
 		}
 
-		std::thread th1(Yomiage, te);
-		th1.detach();
+		Yomiage(te);
 	}
 
 	virtual bool drawFuki(Graphics* g, HDC hdcMem) {
@@ -149,8 +136,7 @@ public:
 		dec = randRange(-9, 2);
 		if (dec >= 0)
 			dec = NO[dec];
-		std::thread th1(Yomiage, "どうしましたか？");
-		th1.detach();
+		Yomiage("どうしましたか？");
 	}
 
 	virtual void constructor() override {
@@ -192,8 +178,7 @@ public:
 		SendMessage(edit, WM_SETFONT, (WPARAM)hFont22, MAKELPARAM(FALSE, 0));
 		if (dec >= 0)
 			dec = NO[dec];
-		std::thread th1(Yomiage, "予定ですね");
-		th1.detach();
+		Yomiage( "予定ですね");
 	}
 	~YoteiTuika() override {
 		DestroyWindow(MO);
@@ -246,8 +231,7 @@ public:
 			day = getIntFromHandle(DAY);
 		}
 		catch (std::invalid_argument) {
-			std::thread th1(Yomiage, "空欄があります！");
-			th1.detach();
+			Yomiage("空欄があります！");
 			return;
 		}
 		Fukidasi::fuki.front()->time = 1;

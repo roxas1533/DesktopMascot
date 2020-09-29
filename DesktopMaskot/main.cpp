@@ -5,6 +5,8 @@
 #include "MYFONT.h"
 #include <gdiplustypes.h>
 #include "body.h"
+#include "aitalk_wrapper.h"
+#pragma comment(lib, "winmm.lib")
 #pragma comment (lib,"Gdiplus.lib")
 #define ID_TRAYICON     (1)
 #define WM_TASKTRAY     (WM_APP + 1)
@@ -16,6 +18,7 @@ void setIcon(NOTIFYICONDATA& nid, HICON& hIcon, LPARAM lp, HWND hwnd);
  HBRUSH hbrEditBox, hbrListBox;
  HDC hdcMem;
 
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	PAINTSTRUCT ps;
 	RECT rc;
@@ -26,6 +29,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	static HMENU hmenuR;
 	static HICON hIcon;
 	static RECT rec = { 270, 0, WIDTH, HEIGHT };
+
 
 	static NOTIFYICONDATA nid = { 0 };
 	HGDIOBJ hb;
@@ -79,8 +83,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		BitBlt(hdc, 0, 0, WIDTH, HEIGHT, hdcMem, 0, 0, SRCCOPY);
 		DeleteObject(hb);
 		EndPaint(hwnd, &ps);
-		//std::cout << "\n";
-		//std::cout << GetLastError()<<"\n";
 		delete(g);
 	}
 		return 0;
@@ -132,12 +134,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 			YoteiCheck::page--;
 			YoteiCheck::redrawButton();
 		}
-		//std::cout << wp << "\n";
 		return 0;
 	case WM_ERASEBKGND:
 		return FALSE;
 	case CB_GETCURSEL:
-
 		break;
 	case WM_TASKTRAY:
 		if (wp == ID_TRAYICON) {       // アイコンの識別コード
@@ -163,22 +163,30 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 				break;
 			}
 		}
+	case MM_WOM_DONE:
+		std::cout << "オワリオワリ" << "\n";
+	case MM_WOM_OPEN:
+		std::cout << "ハジマリハジマリ" << "\n";
+
 	}
 	return DefWindowProc(hwnd, msg, wp, lp);
 }
+
+void createAiTalk(AITalkWrapper &aitalk);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	PSTR lpCmdLine, int nCmdShow) {
 	HWND hwnd;
 	MSG msg;
 	WNDCLASS winc;
+	createAiTalk(aitalk);
 
-	if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
+	/*if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
 		AllocConsole();
 	}
 	FILE* fpOut = NULL;
 
-	freopen_s(&fpOut, "CONOUT$", "w", stdout);
+	freopen_s(&fpOut, "CONOUT$", "w", stdout);*/
 	winc.style = CS_HREDRAW | CS_VREDRAW;
 	winc.lpfnWndProc = WndProc;
 	winc.cbClsExtra = winc.cbWndExtra = 0;
@@ -207,7 +215,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-	FreeConsole();
+	//FreeConsole();
+	AITalkWrapper::closeLibrary();
 
 	return msg.wParam;
 }
@@ -222,3 +231,14 @@ void setIcon(NOTIFYICONDATA& nid, HICON& hIcon, LPARAM lp, HWND hwnd) {
 	nid.uCallbackMessage = WM_TASKTRAY;      // 通知メッセージの
 	lstrcpy(nid.szTip, TEXT("ゆかりさんますこっと"));       // チップヘルプの文字列
 }
+
+void createAiTalk(AITalkWrapper& aitalk){
+	std::string kana;
+	AITalkWrapper::openLibrary("C:/Program Files (x86)/AHS/VOICEROID2", "ORXJC6AIWAUKDpDbH2al");
+	AITalkWrapper::loadLanguage("standard");
+	AITalkWrapper::loadPhraseDictionary("C:/Users/roxas1533/Documents/VOICEROID2/フレーズ辞書/user.pdic");
+	AITalkWrapper::loadWordDictionary("C:/Users/roxas1533/Documents/VOICEROID2/単語辞書/user.wdic");
+	AITalkWrapper::loadSymbolDictionary("C:/Users/roxas1533/Documents/VOICEROID2/記号ポーズ辞書/user.sdic");
+	AITalkWrapper::loadVoice("yukari_emo_44", 1.4f, 1.19f, 2.0f);
+}
+
