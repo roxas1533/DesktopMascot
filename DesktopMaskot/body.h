@@ -15,7 +15,9 @@ public:
 		decrate = randRange(-6, 6);
 	}
 	void main(Graphics* g, HDC hdcMem, HWND hwndd) {
+
 		if (time == 0) {
+			pnow = timeCheck();
 			flink[0] = randRange(0, time + 200);
 			getTex(tex);
 			wakeUp(hdcMem);
@@ -24,14 +26,11 @@ public:
 			//fuki.push_back(Fukidasi());
 			zikanwari = readZikan();
 		}
-		pnow = timeCheck();
-		zihou(hdcMem);
-		zikanwariCheck(hdcMem);
+
 		std::string tex;
 		if ((tex = checkPlans(pnow)) != "") {
 			Fukidasi::fuki.push_back(std::make_unique<Fukidasi>(tex + "、予定の時間です！", hdcMem, NORMAL, 80));
 		}
-		//std::cout << fuki.size();
 		std::list<std::unique_ptr<Fukidasi>>::iterator it = Fukidasi::fuki.begin();
 		while (it != Fukidasi::fuki.end()) {
 			if ((*it)->drawFuki(g, hdcMem)) {
@@ -111,6 +110,7 @@ public:
 	void wakeUp(HDC hdcMem) {
 		std::string text = "これはバグです！";
 		EMO emo = NORMAL;
+		std::cout << pnow.wHour;
 		if (pnow.wHour >= 4 && pnow.wHour <= 7) {
 			text = "おはようございます！早起きですね！";
 		}
@@ -130,7 +130,7 @@ public:
 	void zihou(HDC hdcMem) {
 		std::string text = "これは時報のバグです！";
 		EMO emo = NORMAL;
-		if (checkTime(12, 0, 0)) {
+		if (checkTime(0, 56, 0,40)) {
 			text = "12時です！ごはんの準備です！";
 			flag[0] = true;
 		}
@@ -198,7 +198,7 @@ public:
 		return zikanwari[gen-1][pnow.wDayOfWeek-1];
 	}
 
-
+	SYSTEMTIME pnow;
 private:
 	std::vector<std::vector<std::vector<Bitmap*>>> tex;
 	int time = 0;
@@ -206,7 +206,6 @@ private:
 	bool nowTalking = false;
 	long long flink[2] = { 0 ,0 };
 	int decrate = 0;
-	SYSTEMTIME pnow;
 	std::vector<std::vector<bool>> zikanwari;
 
 };

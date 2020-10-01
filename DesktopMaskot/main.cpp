@@ -31,7 +31,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	static RECT rec = { 270, 0, WIDTH, HEIGHT };
 
 
-	static NOTIFYICONDATA nid = { 0 };
 	HGDIOBJ hb;
 	Gdiplus::Graphics* g;
 	static COLORREF crEditBox, crListBox;
@@ -61,7 +60,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		return 0;
 	}
 	case WM_TIMER:
+		y.pnow = timeCheck();
 		InvalidateRect(hwnd, &rec, TRUE);
+		y.zihou(hdcMem);
+		y.zikanwariCheck(hdcMem);
 		return 0;
 	case WM_PAINT: {
 		PAINTSTRUCT ps;
@@ -163,11 +165,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 				break;
 			}
 		}
-	case MM_WOM_DONE:
-		std::cout << "オワリオワリ" << "\n";
-	case MM_WOM_OPEN:
-		std::cout << "ハジマリハジマリ" << "\n";
-
 	}
 	return DefWindowProc(hwnd, msg, wp, lp);
 }
@@ -184,9 +181,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	/*if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
 		AllocConsole();
 	}
-	FILE* fpOut = NULL;
+	FILE* fpOut = NULL;*/
 
-	freopen_s(&fpOut, "CONOUT$", "w", stdout);*/
+	//freopen_s(&fpOut, "CONOUT$", "w", stdout);
 	winc.style = CS_HREDRAW | CS_VREDRAW;
 	winc.lpfnWndProc = WndProc;
 	winc.cbClsExtra = winc.cbWndExtra = 0;

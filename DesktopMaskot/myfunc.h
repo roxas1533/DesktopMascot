@@ -6,6 +6,8 @@
 #ifndef MYFUNC
 #define MYFUNC
 std::vector<int16_t> speech;
+NOTIFYICONDATA nid = { 0 };
+
 HWAVEOUT hwo = { 0 };
 WAVEHDR hdr;
 inline void hideWindow(HWND hwnd) {

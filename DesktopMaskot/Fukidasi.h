@@ -57,9 +57,14 @@ void Yomiage(std::string te) {
 
 class Fukidasi {
 public:
-	Fukidasi() {}
+	Fukidasi() {
+		showWindow(hwnd);
+		Shell_NotifyIcon(NIM_DELETE, &nid);
+	}
 	virtual ~Fukidasi() {}
 	Fukidasi(std::string te, HDC hdcMem, EMO emo, int time = -1) :text(te), time(time), emotion(emo) {
+		showWindow(hwnd);
+		Shell_NotifyIcon(NIM_DELETE, &nid);
 		size = { 90, 180, 290, 9999 };
 		int h = DrawText(hdcMem, TEXT(text.c_str()), -1, &size, DT_WORDBREAK | DT_CALCRECT);
 		i = (h - 30) / 52 >= 2 ? (h - 30) / 52 : 1;
@@ -189,7 +194,6 @@ public:
 	}
 	virtual bool drawFuki(Graphics* g, HDC hdcMem) override {
 		if (count == 0) {
-			showWindow(hwnd);
 			InvalidateRect(hwnd, &rec2, TRUE);
 		}
 		if (CustomButton::cmpHash_.size() == 0) {
@@ -299,7 +303,6 @@ public:
 	}
 	virtual bool drawFuki(Graphics* g, HDC hdcMem) override {
 		if (count == 0) {
-			showWindow(hwnd);
 			InvalidateRect(hwnd, &rec2, TRUE);
 		}
 		if (CustomButton::cmpHash_.size() == 0) {
