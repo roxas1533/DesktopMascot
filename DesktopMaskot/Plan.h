@@ -45,11 +45,11 @@ inline bool writePlan() {
 inline bool readPlan() {
 	std::ifstream ifs("plans.txt", std::ios::in);
 	if (!ifs)
-		return FALSE;
+		myfunc::wakeErr("plans.txt‚ª‚ ‚è‚Ü‚¹‚ñ");
 	std::string tmp;
 	std::string str;
 	int sum = 0;
-	SYSTEMTIME now = timeCheck();
+	SYSTEMTIME now = myfunc::timeCheck();
 	while (getline(ifs, tmp)) {
 		std::stringstream ss{ tmp };
 		std::string s;
@@ -70,7 +70,7 @@ inline std::vector<std::vector<bool>> readZikan() {
 	std::ifstream ifs("zikanwari.txt", std::ios::in);
 	std::vector<std::vector<bool>> z(5,std::vector<bool>(5));
 	if (!ifs)
-		exit(1);
+		myfunc::wakeErr("zikanwari.txt‚ª‚ ‚è‚Ü‚¹‚ñ");
 	std::string tmp;
 	std::string str;
 	for (int j = 0; getline(ifs, tmp); j++) {

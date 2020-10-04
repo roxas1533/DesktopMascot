@@ -56,11 +56,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		hdcMem = CreateCompatibleDC(NULL);		// カレントスクリーン互換
 		SelectObject(hdcMem, hBitmap);		// MDCにビットマップを割り付け
 		SetTimer(hwnd, 1, 33, NULL);
-		getTranslate(translate);
+		myfunc::getTranslate(translate);
 		return 0;
 	}
 	case WM_TIMER:
-		y.pnow = timeCheck();
+		y.pnow = myfunc::timeCheck();
 		InvalidateRect(hwnd, &rec, TRUE);
 		y.zihou(hdcMem);
 		y.zikanwariCheck(hdcMem);
@@ -101,7 +101,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		}
 		else if (wp == 40007) {
 			Shell_NotifyIcon(NIM_ADD, &nid);
-			hideWindow(hwnd);
+			myfunc::hideWindow(hwnd);
 		}
 		else if (wp == 40004) {
 			CustomButton::destroyFlag = false;
@@ -154,7 +154,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 				/* 右ボタンが押された処理 */
 				break;
 			case WM_LBUTTONDBLCLK:
-				showWindow(hwnd);
+				myfunc::showWindow(hwnd);
 				Shell_NotifyIcon(NIM_DELETE, &nid);
 				break;
 			case WM_RBUTTONDBLCLK:

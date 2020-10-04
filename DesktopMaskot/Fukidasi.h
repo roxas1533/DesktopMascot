@@ -58,12 +58,12 @@ void Yomiage(std::string te) {
 class Fukidasi {
 public:
 	Fukidasi() {
-		showWindow(hwnd);
+		myfunc::showWindow(hwnd);
 		Shell_NotifyIcon(NIM_DELETE, &nid);
 	}
 	virtual ~Fukidasi() {}
 	Fukidasi(std::string te, HDC hdcMem, EMO emo, int time = -1) :text(te), time(time), emotion(emo) {
-		showWindow(hwnd);
+		myfunc::showWindow(hwnd);
 		Shell_NotifyIcon(NIM_DELETE, &nid);
 		size = { 90, 180, 290, 9999 };
 		int h = DrawText(hdcMem, TEXT(text.c_str()), -1, &size, DT_WORDBREAK | DT_CALCRECT);
@@ -92,7 +92,7 @@ public:
 	virtual bool drawFuki(Graphics* g, HDC hdcMem) {
 		if (count == 0) {
 			constructor();
-			showWindow(hwnd);
+			myfunc::showWindow(hwnd);
 			InvalidateRect(hwnd, &rec2, TRUE);
 		}
 		if (CustomButton::cmpHash_.size() == 0) {
@@ -229,10 +229,10 @@ public:
 		std::string s = buf;
 		int hour, month, day, min;
 		try {
-			hour = getIntFromHandle(H);
-			min = getIntFromHandle(Min);
-			month = getIntFromHandle(MO);
-			day = getIntFromHandle(DAY);
+			hour = myfunc::getIntFromHandle(H);
+			min = myfunc::getIntFromHandle(Min);
+			month = myfunc::getIntFromHandle(MO);
+			day = myfunc::getIntFromHandle(DAY);
 		}
 		catch (std::invalid_argument) {
 			Yomiage("ãÛóìÇ™Ç†ÇËÇ‹Ç∑ÅI");
@@ -312,7 +312,7 @@ public:
 		drawBack(g);
 		SelectObject(hdcMem, GREEN_BRUSH);
 
-		for (auto [i, p] : with_index(plans)) {
+		for (auto [i, p] : myfunc::with_index(plans)) {
 			if (i < (page + 1) * 4 && i >= page * 4) {
 				Rectangle(hdcMem, 25, s[i - page * 4].bottom, 275, s[i - page * 4].bottom + 4);
 				std::string tex = std::to_string(p.month) + "åé" + std::to_string(p.day) + "ì˙" + std::to_string(p.hour) + "éû" + std::to_string(p.min) + "ï™";
@@ -362,7 +362,7 @@ public:
 		emotion = NORMAL;
 		dec = randRange(-9, 2);
 		json data = getHttp();
-		for (auto [i,sortie] : with_index(data["variants"])) {
+		for (auto [i,sortie] : myfunc::with_index(data["variants"])) {
 			srell::smatch smatch;
 			srell::regex re(R"((?<=\().*(?=\)))");
 			srell::regex dub(R"((?<=").*(?="))");
@@ -388,7 +388,7 @@ public:
 	}
 	virtual bool drawFuki(Graphics* g, HDC hdcMem) override {
 		if (count == 0) {
-			showWindow(hwnd);
+			myfunc::showWindow(hwnd);
 			InvalidateRect(hwnd, &rec2, TRUE);
 		}
 		if (CustomButton::cmpHash_.size() == 0) {

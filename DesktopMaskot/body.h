@@ -17,7 +17,7 @@ public:
 	void main(Graphics* g, HDC hdcMem, HWND hwndd) {
 
 		if (time == 0) {
-			pnow = timeCheck();
+			pnow = myfunc::timeCheck();
 			flink[0] = randRange(0, time + 200);
 			getTex(tex);
 			wakeUp(hdcMem);
@@ -130,7 +130,7 @@ public:
 	void zihou(HDC hdcMem) {
 		std::string text = "これは時報のバグです！";
 		EMO emo = NORMAL;
-		if (checkTime(0, 56, 0,40)) {
+		if (checkTime(12, 0, 0)) {
 			text = "12時です！ごはんの準備です！";
 			flag[0] = true;
 		}

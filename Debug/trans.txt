@@ -32,6 +32,7 @@ Sabotage,–WŠQ
 Spy,ö“ü
 Survival,‘Ï‹v
 Rescue,‹~o
+Hive,‹ìœ
 Energy Reduction,ƒGƒlƒ‹ƒM[Œ¸­
 Enemy Physical Enhancement: Impact,‹­‰»‚³‚ê‚½ÕŒ‚‘Ï«
 Enemy Physical Enhancement: Slash,‹­‰»‚³‚ê‚½Ø’f‘Ï«

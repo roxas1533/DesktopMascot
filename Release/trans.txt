@@ -1,0 +1,64 @@
+Mercury,水星
+Venus,金星
+Earth,地球
+Lua,月
+Mars,火星
+Deimos,ダイモス
+Phobos,フォボス
+Ceres,ケレス
+Jupiter,木星
+Europa,エウロパ
+Saturn,土星
+Uranus,冥王星
+Neptune,海王星
+Pluto,冥王星
+Sedna,セドナ
+Kuva Fortress,クバ要塞
+Eris,エリス
+Void,Void
+Assassination,抹殺
+Assault,突撃
+Capture,確保
+Defection,脱出
+Defense,防衛
+Disruption,分裂
+Excavation,発掘
+Exterminate,掃滅
+Hijack,ハイジャック
+Infested Salvage,感染回収
+Interception,傍受
+Mobile Defense,機動防衛
+Sabotage,妨害
+Spy,潜入
+Survival,耐久
+Rescue,救出
+Hive,駆除
+Energy Reduction,エネルギー減少
+Enemy Physical Enhancement: Impact,強化された衝撃耐性
+Enemy Physical Enhancement: Slash,強化された切断耐性
+Enemy Physical Enhancement: Puncture,強化された貫通耐性
+Eximus Stronghold,エクシマスの要塞
+Enemy Elemental Enhancement: Magnetic,強化された磁気耐性
+Enemy Elemental Enhancement: Corrosive,強化された腐食耐性
+Enemy Elemental Enhancement: Viral,強化された感染耐性
+Enemy Elemental Enhancement: Electricity,強化された電気耐性
+Enemy Elemental Enhancement: Radiation,強化された放射線耐性
+Enemy Elemental Enhancement: Gas,強化されたガス耐性
+Enemy Elemental Enhancement: Heat,強化された火炎耐性
+Enemy Elemental Enhancement: Blast,強化された爆発耐性
+Enemy Elemental Enhancement: Cold,強化された冷気耐性
+Enemy Elemental Enhancement: Toxin,強化された毒耐性
+Environmental Hazard: Radiation Pockets,放射線障害
+Environmental Hazard: Electromagnetic Anomalies,電磁変異
+Environmental Hazard: Dense Fog,濃霧
+Environmental Hazard: Fire,火災
+Environmental Effect: Cryogenic Leakage,極低温漏出
+Environmental Effect: Extreme Cold,極寒
+Augmented Enemy Armor,敵アーマー増強
+Enhanced Enemy Shields,敵シールド増強
+Weapon Restriction: Pistol Only,ピストル限定
+Weapon Restriction: Shotgun Only,ショットガン限定
+Weapon Restriction: Sniper Only,スナイパー限定
+Weapon Restriction: Assault Rifle Only,アサルトライフル限定
+Weapon Restriction: Melee Only,近接限定
+Weapon Restriction: Bow Only,ボウ限定
