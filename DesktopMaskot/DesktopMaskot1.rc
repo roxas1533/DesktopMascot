@@ -72,7 +72,7 @@ BEGIN
         END
         MENUITEM "終了",                          40006
         MENUITEM "最小化",                         40007
-        MENUITEM "メニュー",                        ID_40004
+        MENUITEM "メニュー",                        40008
     END
 END
 

@@ -50,7 +50,7 @@ public:
     // ボイスライブラリを読み込む
     // voice_name : ボイス名 (キャラクター名ではなくボイスライブラリのディレクトリ名)
     //            : 例えば "akari_44"
-    static void loadVoice(const std::string& voice_name, const float pitch = 1.3f, const float speed = 1.15f, const float volume = 2.0f);
+    static bool loadVoice(const std::string& voice_name, const float pitch = 1.3f, const float speed = 1.15f, const float volume = 2.0f);
 
     // コンストラクタ
     AITalkWrapper(void);

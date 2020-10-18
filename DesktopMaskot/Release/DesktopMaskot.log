@@ -1,6 +1,7 @@
-﻿  main.cpp
+﻿  aitalk_wrapper.cpp
+  main.cpp
 C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\MYBRUSH.h(6,1): warning C4005: 'WHITE_BRUSH': マクロが再定義されました。
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um\wingdi.h(1907): message : 'WHITE_BRUSH' の以前の定義を確認してください
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\wingdi.h(1907): message : 'WHITE_BRUSH' の以前の定義を確認してください
 C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\CustomButton.h(64,9): warning C4101: 'hFont2': ローカル変数は 1 度も使われていません。
 C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\CustomButton.h(63,9): warning C4101: 'hFont': ローカル変数は 1 度も使われていません。
 C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(113,36): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
@@ -14,10 +15,10 @@ C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h
 C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(330,34): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
 C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(415,35): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
 C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\Fukidasi.h(416,34): warning C4244: '引数': 'int' から 'Gdiplus::REAL' への変換です。データが失われる可能性があります。
-C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\main.cpp(23,14): warning C4101: 'ps': ローカル変数は 1 度も使われていません。
+C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\DesktopMaskot\main.cpp(22,14): warning C4101: 'ps': ローカル変数は 1 度も使われていません。
   コード生成しています。
-  28 of 3355 functions ( 0.8%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    122 functions had inline decision re-evaluated but remain unchanged
+  74 of 3382 functions ( 2.2%) were compiled, the rest were copied from previous compilation.
+    29 functions were new in current compilation
+    45 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
   DesktopMaskot.vcxproj -> C:\Users\roxas1533\source\repos\roxas1533\DesktopMascot\Release\DesktopMaskot.exe

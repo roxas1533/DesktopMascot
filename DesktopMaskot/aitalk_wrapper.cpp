@@ -224,7 +224,7 @@ bool AITalkWrapper::loadSymbolDictionary(const std::string &path) {
     }
 }
 
-void AITalkWrapper::loadVoice(const std::string &voice_name,const float pitch,const float speed,const float volume) {
+bool AITalkWrapper::loadVoice(const std::string &voice_name,const float pitch,const float speed,const float volume) {
     if (IsLibraryOpened() == false) {
         throw std::errc::function_not_supported;
     }
@@ -262,6 +262,7 @@ void AITalkWrapper::loadVoice(const std::string &voice_name,const float pitch,co
     if (result != AITALKERR_SUCCESS) {
         throw std::errc::invalid_argument;
     }
+    return true;
 }
 
 AITalkWrapper::AITalkWrapper(void)

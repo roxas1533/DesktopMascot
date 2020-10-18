@@ -63,6 +63,7 @@ inline bool readPlan() {
 		if (!(p < nowP))
 			plans.push_back(p);
 	}
+	return true;
 }
 
 

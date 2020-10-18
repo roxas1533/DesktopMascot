@@ -8,15 +8,18 @@
 #include <memory>
 using namespace Gdiplus;
 
-
 class yukari {
+private:
+	RECT rec = { 0, 0, WIDTH, HEIGHT };
 public:
+	FILETIME stNoTime;
+	FILETIME fileNowTime;
 	yukari() {
 		decrate = randRange(-6, 6);
 	}
 	void main(Graphics* g, HDC hdcMem, HWND hwndd) {
-
 		if (time == 0) {
+			InvalidateRect(hwnd, &rec, TRUE);
 			pnow = myfunc::timeCheck();
 			flink[0] = randRange(0, time + 200);
 			getTex(tex);
@@ -26,33 +29,67 @@ public:
 			//fuki.push_back(Fukidasi());
 			zikanwari = readZikan();
 		}
-
-		std::string tex;
-		if ((tex = checkPlans(pnow)) != "") {
-			Fukidasi::fuki.push_back(std::make_unique<Fukidasi>(tex + "、予定の時間です！", hdcMem, NORMAL, 80));
-		}
-		std::list<std::unique_ptr<Fukidasi>>::iterator it = Fukidasi::fuki.begin();
-		while (it != Fukidasi::fuki.end()) {
-			if ((*it)->drawFuki(g, hdcMem)) {
-				nowTalking = false;
-				normal(g);
-				CustomButton::destroyFlag = true;
-				it = Fukidasi::fuki.erase(it);
-				InvalidateRect(hwnd, &rec2, TRUE);
+		if (sn == NONE) {
+			std::string tex;
+			if ((tex = checkPlans(pnow)) != "") {
+				Fukidasi::fuki.push_back(std::make_unique<Fukidasi>(tex + "、予定の時間です！", hdcMem, NORMAL, 80));
 			}
-			else {
-				nowTalking = true;
-				switch ((*it)->emotion)
-				{
-				case NORMAL:
-					tNormal(g, (*it)->body, (*it)->dec, (*it)->eye);
-					break;
-				case BOTH:
-					tBoth(g, (*it)->body, (*it)->dec, (*it)->eye);
-				default:
+			std::list<std::unique_ptr<Fukidasi>>::iterator it = Fukidasi::fuki.begin();
+			while (it != Fukidasi::fuki.end()) {
+				if ((*it)->drawFuki(g, hdcMem)) {
+					nowTalking = false;
+					normal(g);
+					CustomButton::destroyFlag = true;
+					it = Fukidasi::fuki.erase(it);
+					InvalidateRect(hwnd, &rec2, TRUE);
+				}
+				else {
+					nowTalking = true;
+					switch ((*it)->emotion)
+					{
+					case NORMAL:
+						tNormal(g, (*it)->body, (*it)->dec, (*it)->eye);
+						break;
+					case BOTH:
+						tBoth(g, (*it)->body, (*it)->dec, (*it)->eye);
+						break;
+					default:
+						break;
+					}
+
 					break;
 				}
+			}
+		}
+		else {
+			SystemTimeToFileTime(&pnow, &fileNowTime);
+			__int64* nTime1 = (__int64*)&stNoTime;
+			__int64* nTime2 = (__int64*)&fileNowTime;
+			__int64 leftTime = *nTime2 - *nTime1;
 
+			switch (sn)
+			{
+
+			case NONE:
+				break;
+			case tenMIn:
+				if (leftTime / 10000 / 1000/60 >= 10) {
+					myfunc:: resetTimer();
+				}
+				break;
+			case thrMin:
+				if (leftTime / 10 / 1000 / 60 >= 30) {
+					myfunc::resetTimer();
+				}
+				break;
+			case HOUR:
+				if (leftTime / 10 / 1000 / 60 >= 60) {
+					myfunc::resetTimer();
+				}
+				break;
+			case NEVER:
+				break;
+			default:
 				break;
 			}
 		}
@@ -110,7 +147,6 @@ public:
 	void wakeUp(HDC hdcMem) {
 		std::string text = "これはバグです！";
 		EMO emo = NORMAL;
-		std::cout << pnow.wHour;
 		if (pnow.wHour >= 4 && pnow.wHour <= 7) {
 			text = "おはようございます！早起きですね！";
 		}
@@ -130,11 +166,11 @@ public:
 	void zihou(HDC hdcMem) {
 		std::string text = "これは時報のバグです！";
 		EMO emo = NORMAL;
-		if (checkTime(12, 0, 0)) {
+		if (checkTime(12, 0, 0) && !checkYoubi(2)) {
 			text = "12時です！ごはんの準備です！";
 			flag[0] = true;
 		}
-		else if (checkTime(18, 0, 1)) {
+		else if (checkTime(18, 0, 1) && !checkYoubi(5)) {
 			text = "18時です！ごはん...食べたいです..";
 			flag[1] = true;
 		}
@@ -167,23 +203,23 @@ public:
 			text = "1限がはじまりますよ！";
 			flag[4] = true;
 		}
-			else if (checkTime(10, 40, 5)&& checkYoubi(2)) {
+		else if (checkTime(10, 40, 5) && checkYoubi(2)) {
 			text = "2限がはじまりますよ！";
 			flag[5] = true;
 		}
-			else if (checkTime(13, 10, 6) && checkYoubi(3)) {
+		else if (checkTime(13, 10, 6) && checkYoubi(3)) {
 			text = "3限がはじまります！";
 			flag[6] = true;
 		}
-			else if (checkTime(15, 0, 7) && checkYoubi(4)) {
+		else if (checkTime(15, 0, 7) && checkYoubi(4)) {
 			text = "4限がはじまります。おやつは、ありますか？";
 			flag[7] = true;
 		}
-			else if (checkTime(16, 50, 8) && checkYoubi(5)) {
+		else if (checkTime(16, 50, 8) && checkYoubi(5)) {
 			text = "5限がはじまります。最後です！";
 			flag[8] = true;
 		}
-			else
+		else
 			text = "";
 		if (strcmp(text.c_str(), "")) {
 			Fukidasi::fuki.push_back(std::make_unique<Fukidasi>(text, hdcMem, emo, 80));
@@ -195,7 +231,7 @@ public:
 	bool checkYoubi(int gen) {
 		if (pnow.wDayOfWeek == 0 || pnow.wDayOfWeek == 6)
 			return false;
-		return zikanwari[gen-1][pnow.wDayOfWeek-1];
+		return zikanwari[gen - 1][pnow.wDayOfWeek - 1];
 	}
 
 	SYSTEMTIME pnow;
@@ -207,5 +243,4 @@ private:
 	long long flink[2] = { 0 ,0 };
 	int decrate = 0;
 	std::vector<std::vector<bool>> zikanwari;
-
 };
