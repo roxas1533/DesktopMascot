@@ -150,6 +150,7 @@
     <ClCompile Include="aitalk_wrapper.cpp" />
     <ClCompile Include="httpGet.h" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="myfunc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aitalk_AIAudio.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="rand.h" />
     <ClInclude Include="resource2.h" />
     <ClInclude Include="myfunc.h" />
+    <ClInclude Include="TcpSocket.h" />
     <ClInclude Include="tex.h" />
   </ItemGroup>
   <ItemGroup>

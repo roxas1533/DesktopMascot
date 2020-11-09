@@ -1,8 +1,5 @@
 #pragma once
-#include<Windows.h>
-#include <gdiplus.h>
-#include <iostream>
-#include <objidl.h>
+#include "myfunc.h"
 #pragma comment (lib,"Gdiplus.lib")
 #include <cstring>
 #include "tex.h"

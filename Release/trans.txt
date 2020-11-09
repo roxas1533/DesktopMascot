@@ -23,12 +23,12 @@ Defection,’Eo
 Defense,–h‰q
 Disruption,•ª—ô
 Excavation,”­Œ@
-Exterminate,‘|–Å
 Extermination,‘|–Å
 Hijack,ƒnƒCƒWƒƒƒbƒN
 Infested Salvage,Š´õ‰ñû
 Interception,–Tó
 Mobile Defense,‹@“®–h‰q
+Free Roam,©—Rs“®
 Sabotage,–WŠQ
 Spy,ö“ü
 Survival,‘Ï‹v

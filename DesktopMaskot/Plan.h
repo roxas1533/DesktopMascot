@@ -1,11 +1,9 @@
 #pragma once
-#include <string>
+#include "myfunc.h"
 #include <list>
-#include<Windows.h>
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include "myfunc.h"
 
 #ifndef PLAN
 #define PLAN

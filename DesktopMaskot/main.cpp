@@ -1,10 +1,9 @@
-#include <Windows.h>
+#include "myfunc.h"
+#include "body.h"
 #include "MYBRUSH.h"
 #include "loadPng.h"
 #include "resource2.h"
 #include "MYFONT.h"
-#include <gdiplustypes.h>
-#include "body.h"
 #include "aitalk_wrapper.h"
 #pragma comment(lib, "winmm.lib")
 #pragma comment (lib,"Gdiplus.lib")
@@ -96,6 +95,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		ClientToScreen(hwnd, &po);
 		TrackPopupMenu(hmenuR, TPM_LEFTALIGN | TPM_BOTTOMALIGN, po.x, po.y, 0, hwnd, NULL);
 		return 0;
+	case WM_CTLCOLOREDIT:
+		SetTextColor((HDC)wp, COLORREF(RGB(1,0,0)));
+		return  COLORREF(RGB(1, 0, 0));
 	case WM_COMMAND:
 		if (wp >= 40002 && wp <= 40005) {
 			menuInfo.cbSize = sizeof(MENUITEMINFO);
@@ -129,7 +131,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 			CustomButton::destroyFlag = false;
 			Fukidasi::fuki.push_back(std::make_unique<Menu>());
 		}
-		else if (wp == 1000) {
+		else if (wp == CHECKPLAN) {
 			Fukidasi::fuki.front()->time = 1;
 			if (plans.empty()) {
 				Fukidasi::fuki.push_back(std::make_unique<Fukidasi>("ó\íËÇÕÇ†ÇËÇ‹ÇπÇÒÅI", hdcMem, NORMAL, 80));
@@ -137,25 +139,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 			else
 				Fukidasi::fuki.push_back(std::make_unique<YoteiCheck>());
 		}
-		else if (wp == 1001) {
+		else if (wp == ADDPLAN) {
 			Fukidasi::fuki.front()->time = 1;
 			Fukidasi::fuki.push_back(std::make_unique<YoteiTuika>());
 		}
-		else if (wp == 1002) {
+		else if (wp == TODAYSORTIE) {
 			Fukidasi::fuki.front()->time = 1;
 			Fukidasi::fuki.push_back(std::make_unique<Sortie>());
 		}
-		else if (wp == 1003 || wp == 1005 || wp == 1007) {
+		else if (wp == CANCEL) {
 			Fukidasi::fuki.front()->time = 1;
 		}
-		else if (wp == 1004) {
+		else if (wp == 2004) {
 			Fukidasi::fuki.front()->selectButton(wp, hdcMem);
 		}
-		else if (wp == 1008) {
+		else if (wp == 2008) {
 			YoteiCheck::page++;
 			YoteiCheck::redrawButton();
 		}
-		else if (wp == 1006) {
+		else if (wp == 2006) {
 			YoteiCheck::page--;
 			YoteiCheck::redrawButton();
 		}
@@ -203,12 +205,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::thread cT(createAiTalk);
 	cT.detach();
 
-	if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
-		AllocConsole();
-	}
-	FILE* fpOut = NULL;
+	//if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
+	//	AllocConsole();
+	//}
+	//FILE* fpOut = NULL;
 
-	freopen_s(&fpOut, "CONOUT$", "w", stdout);
+	//freopen_s(&fpOut, "CONOUT$", "w", stdout);
 
 	winc.style = CS_HREDRAW | CS_VREDRAW;
 	winc.lpfnWndProc = WndProc;
@@ -216,7 +218,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	winc.hInstance = hInstance;
 	winc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	winc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	winc.hbrBackground = BLACK_BRUSH2;
+	winc.hbrBackground = GREEN_BRUSH;
 	winc.lpszMenuName = NULL;
 	winc.lpszClassName = TEXT("yukari");
 	RECT DISPLAY_SIZE;
@@ -224,15 +226,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	if (!RegisterClass(&winc)) return 0;
 
 	hwnd = CreateWindowEx(
-		WS_EX_LAYERED | WS_EX_TOOLWINDOW,
+		WS_EX_LAYERED|WS_EX_TOOLWINDOW,
 		TEXT("yukari"), TEXT("Ç‰Ç©ÇËÇ≥ÇÒÇ‹Ç∑Ç±Ç¡Ç∆"),
 		WS_POPUP | WS_VISIBLE,
 		DISPLAY_SIZE.right - WIDTH, DISPLAY_SIZE.bottom - HEIGHT, WIDTH, HEIGHT, NULL, NULL,
 		hInstance, NULL
 	);
-	SetLayeredWindowAttributes(hwnd, 0x00010000, 0, LWA_COLORKEY);
+	SetLayeredWindowAttributes(hwnd, 0x00000000, 0, LWA_COLORKEY);
 	SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_SHOWWINDOW);
 	if (hwnd == NULL) return 0;
+
 	while (GetMessage(&msg, NULL, 0, 0)) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);

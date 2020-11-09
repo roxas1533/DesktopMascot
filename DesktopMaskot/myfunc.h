@@ -1,15 +1,29 @@
-#include <Windows.h>
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#include <windows.h>
+#include <objidl.h>
+#include <gdiplus.h>
+#include <gdiplustypes.h>
 #include <map>
+#include <sstream>
 #include <fstream>
 #include <iostream>
 #include "aitalk_wrapper.h"
+#include <string>
+#include "MYBRUSH.h"
+#include <stdio.h>
+#pragma comment(lib, "ws2_32.lib")
+
 #ifndef MYFUNC
 #define MYFUNC
-std::vector<int16_t> speech;
-NOTIFYICONDATA nid = { 0 };
-const int WIDTH = 500, HEIGHT = 620;
-HMENU hmenuR;
-MENUITEMINFO menuInfo;
+
+#define CANCEL 1003
+#define ADDPLAN 1001
+#define CHECKPLAN 1000
+#define KADAI 1004
+#define TODAYSORTIE 1002
+#define WIDTH 500
+#define HEIGHT 620
 
 enum STOP_NOTIFICATION {
 	NONE,
@@ -18,9 +32,10 @@ enum STOP_NOTIFICATION {
 	HOUR,
 	NEVER
 };
-STOP_NOTIFICATION sn = NONE;
-HWAVEOUT hwo = { 0 };
-WAVEHDR hdr;
+extern STOP_NOTIFICATION sn;
+extern WAVEHDR hdr;
+extern HMENU hmenuR;
+extern MENUITEMINFO menuInfo;
 namespace myfunc {
 	inline void resetTimer() {
 		menuInfo.cbSize = sizeof(MENUITEMINFO);

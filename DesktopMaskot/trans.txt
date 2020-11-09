@@ -9,7 +9,7 @@ Ceres,ケレス
 Jupiter,木星
 Europa,エウロパ
 Saturn,土星
-Uranus,冥王星
+Uranus,天王星
 Neptune,海王星
 Pluto,冥王星
 Sedna,セドナ
@@ -23,15 +23,17 @@ Defection,脱出
 Defense,防衛
 Disruption,分裂
 Excavation,発掘
-Exterminate,掃滅
+Extermination,掃滅
 Hijack,ハイジャック
 Infested Salvage,感染回収
 Interception,傍受
 Mobile Defense,機動防衛
+Free Roam,自由行動
 Sabotage,妨害
 Spy,潜入
 Survival,耐久
 Rescue,救出
+Hive,駆除
 Energy Reduction,エネルギー減少
 Enemy Physical Enhancement: Impact,強化された衝撃耐性
 Enemy Physical Enhancement: Slash,強化された切断耐性

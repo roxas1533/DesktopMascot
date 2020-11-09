@@ -1,24 +1,43 @@
 #pragma once
-#include <gdiplus.h>
+#include "myfunc.h"
 #include "loadPng.h"
 #include "Fukidasi.h"
 #include "Plan.h"
 #include <list>
 #include <time.h>
 #include <memory>
+#include "TcpSocket.h"
 using namespace Gdiplus;
-
+PROCESS_INFORMATION pi = { 0 };
+void gmailPushServer () {
+	STARTUPINFO si;
+	::ZeroMemory(&si, sizeof(STARTUPINFO));
+	si.cb = sizeof(STARTUPINFO);
+	si.dwFlags = STARTF_USESHOWWINDOW;
+	si.wShowWindow = SW_SHOWNORMAL;
+	TCHAR st[] = "C:\\Users\\roxas1533\\epython\\pythonw.exe gmail_push\\httpsServer.py";
+	CreateProcess("C:\\Users\\roxas1533\\epython\\pythonw.exe", st, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+}
 class yukari {
 private:
 	RECT rec = { 0, 0, WIDTH, HEIGHT };
+
 public:
+	~yukari() {
+		TerminateProcess(OpenProcess(PROCESS_ALL_ACCESS, FALSE, pi.dwProcessId), 0);
+		CloseHandle(pi.hProcess);
+		CloseHandle(pi.hThread);
+	}
 	FILETIME stNoTime;
 	FILETIME fileNowTime;
+	GmailTcp gp;
 	yukari() {
 		decrate = randRange(-6, 6);
 	}
 	void main(Graphics* g, HDC hdcMem, HWND hwndd) {
 		if (time == 0) {
+			gmailPushServer();
+
 			InvalidateRect(hwnd, &rec, TRUE);
 			pnow = myfunc::timeCheck();
 			flink[0] = randRange(0, time + 200);
@@ -69,12 +88,11 @@ public:
 
 			switch (sn)
 			{
-
 			case NONE:
 				break;
 			case tenMIn:
-				if (leftTime / 10000 / 1000/60 >= 10) {
-					myfunc:: resetTimer();
+				if (leftTime / 10000 / 1000 / 60 >= 10) {
+					myfunc::resetTimer();
 				}
 				break;
 			case thrMin:

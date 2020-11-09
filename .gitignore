@@ -5,3 +5,12 @@
 /Debug/Vsay.exe
 /.vs/DesktopMaskot/v16/Browse.VC.opendb
 /.vs/DesktopMaskot/v16
+/DesktopMaskot/gmail_push/httpsServer.py
+/DesktopMaskot/gmail_push/main.py
+/DesktopMaskot/gmail_push/server.py
+/DesktopMaskot/gmail_push/test.py
+/DesktopMaskot/gmail_push/中間証明書
+/DesktopMaskot/server.crt
+/DesktopMaskot/server.key
+/DesktopMaskot/token.pickle
+/DesktopMaskot/credentials.json

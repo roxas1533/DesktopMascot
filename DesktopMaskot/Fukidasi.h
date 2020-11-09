@@ -1,14 +1,14 @@
 #pragma once
-#include <gdiplus.h>
+#include "myfunc.h"
 #include "loadPng.h"
 #include "rand.h"
 #include "Plan.h"
-#include "myfunc.h"
 #include "CustomButton.h"
 #include <regex>
 #include "httpGet.h"
 #include <srell2_800/srell.hpp>
 using namespace Gdiplus;
+using namespace myfunc;
 class yukari;
 static HWND hwnd;
 std::map< std::string, std::string> translate;
@@ -18,10 +18,10 @@ RECT rec2 = { 0, 0, 270, 650 };
 
 const int NO[] = { 2,8,10 };
 const int BO[] = { 3,4,12 };
-const int buttonNum = 4;
-const std::map<int, std::string> list[] = {
-	{{1000,"・予定確認"},{1001,"・予定追加"},{1002,"・今日のソーティ"},{1003,"キャンセル"}},
-	{{1004,"追加!"},{1005,"キャンセル"}}
+const int buttonNum = 5;
+const std::vector<std::unordered_map<int, std::string>> list = {
+	{{CHECKPLAN,"・予定確認"},{ADDPLAN,"・予定追加"},{TODAYSORTIE,"・今日のソーティ"},{KADAI,"・課題"},{CANCEL,"キャンセル"}},
+	{{2004,"追加!"},{CANCEL,"キャンセル"}}
 };
 enum EMO {
 	NORMAL = 0,
@@ -31,6 +31,11 @@ enum EMO {
 };
 bool flag = false;
 AITalkWrapper aitalk;
+std::vector<int16_t> speech;
+NOTIFYICONDATA nid = { 0 };
+
+HWAVEOUT hwo = { 0 };
+
 void Yomiage(std::string te) {
 	std::string kana;
 	aitalk.textToKana(te, &kana);
@@ -52,7 +57,6 @@ void Yomiage(std::string te) {
 		waveOutPrepareHeader(hwo, &hdr, sizeof(WAVEHDR));
 		waveOutWrite(hwo, &hdr, sizeof(WAVEHDR));
 	}
-
 }
 
 class Fukidasi {
@@ -85,15 +89,13 @@ public:
 		default:
 			break;
 		}
-
-		Yomiage(te);
 	}
 
 	virtual bool drawFuki(Graphics* g, HDC hdcMem) {
 		if (count == 0) {
+			if (text != "")
+				Yomiage(text);
 			constructor();
-			myfunc::showWindow(hwnd);
-			InvalidateRect(hwnd, &rec2, TRUE);
 		}
 		if (CustomButton::cmpHash_.size() == 0) {
 			addButton();
@@ -114,7 +116,10 @@ public:
 		g->DrawImage(tex, RectF(80, 202 + i * 52, 200, 52), 0, 288, 549, 82, UnitPixel);
 	}
 
-	virtual void constructor() {}
+	virtual void constructor() {
+		myfunc::showWindow(hwnd);
+		InvalidateRect(hwnd, &rec2, TRUE);
+	}
 	virtual void addButton() {}
 	virtual void selectButton(int id, HDC hdcMem) {}
 
@@ -141,10 +146,11 @@ public:
 		dec = randRange(-9, 2);
 		if (dec >= 0)
 			dec = NO[dec];
-		Yomiage("どうしましたか？");
 	}
 
 	virtual void constructor() override {
+		Yomiage("どうしましたか？");
+		Fukidasi::constructor();
 		if (fuki.front()->time > 1)
 			fuki.front()->time = 1;
 		addButton();
@@ -152,8 +158,10 @@ public:
 	virtual void addButton() {
 		CustomButton::destroyFlag = false;
 		CustomButton* b[buttonNum];
-		for (int i = 0; i < buttonNum; i++) {
-			CustomButton::create(hwnd, &b[i], list[0].at(1000 + i), 95, 202 + i * 35, 1000 + i);
+		int co = 0;
+		for (auto& li : list[0]) {
+			CustomButton::create(hwnd, &b[co], li.second, 95, 202 + co * 35, li.first);
+			co++;
 		}
 		size = { 95, 202, 270, b[buttonNum - 1]->size.bottom };
 		i = (b[buttonNum - 1]->size.bottom - 150 - 30) / 52;
@@ -174,7 +182,6 @@ public:
 		DAY(setSelectList(h, 1, 200, 230)), H(setSelectList(h, 3, 110, 275)), Min(setSelectList(h, 2, 200, 275)),
 		edit(CreateWindowEx(0, TEXT("EDIT"), TEXT(""), WS_CHILD | WS_VISIBLE, 15, 350, 270, 22, hwnd, (HMENU)12222, h, NULL)) {
 		time = -1;
-
 		size = { 15, 190, 285,999 };
 		i = (277) / 52;
 		body = randRange(0, 10);
@@ -183,7 +190,6 @@ public:
 		SendMessage(edit, WM_SETFONT, (WPARAM)hFont22, MAKELPARAM(FALSE, 0));
 		if (dec >= 0)
 			dec = NO[dec];
-		Yomiage( "予定ですね");
 	}
 	~YoteiTuika() override {
 		DestroyWindow(MO);
@@ -194,7 +200,7 @@ public:
 	}
 	virtual bool drawFuki(Graphics* g, HDC hdcMem) override {
 		if (count == 0) {
-			InvalidateRect(hwnd, &rec2, TRUE);
+			constructor();
 		}
 		if (CustomButton::cmpHash_.size() == 0) {
 			addButton();
@@ -218,8 +224,10 @@ public:
 	void addButton() override {
 		CustomButton::destroyFlag = false;
 		CustomButton* b[buttonNum];
-		for (int i = 0; i < list[1].size(); i++) {
-			CustomButton::create(hwnd, &b[i], list[1].at(1004 + i), 40 + i * 100, 450, 1004 + i);
+		int co = 0;
+		for (auto& li : list[1]) {
+			CustomButton::create(hwnd, &b[co], li.second, 40 + co * 100, 450, li.first);
+			co++;
 		}
 	}
 
@@ -283,6 +291,11 @@ public:
 			fuki.push_back(std::make_unique<Fukidasi>("予定追加エラーです", hdcMem, NORMAL, 80));
 		}
 	};
+
+	void constructor() override {
+		Fukidasi::constructor();
+		Yomiage("予定です");
+	}
 };
 
 class YoteiCheck :public Fukidasi {
@@ -302,15 +315,13 @@ public:
 		page = 0;
 	}
 	virtual bool drawFuki(Graphics* g, HDC hdcMem) override {
-		if (count == 0) {
-			InvalidateRect(hwnd, &rec2, TRUE);
-		}
 		if (CustomButton::cmpHash_.size() == 0) {
 			addButton();
 		}
 
 		drawBack(g);
 		SelectObject(hdcMem, GREEN_BRUSH);
+		SelectObject(hdcMem, GetStockObject(NULL_PEN));
 
 		for (auto [i, p] : myfunc::with_index(plans)) {
 			if (i < (page + 1) * 4 && i >= page * 4) {
@@ -333,14 +344,14 @@ public:
 		CustomButton::destroyFlag = false;
 		if (plans.size() - page * 4 > 4) {
 			CustomButton* next;
-			CustomButton::create(hwnd, &next, "次へ", 210, 450, 1008);
+			CustomButton::create(hwnd, &next, "次へ", 210, 450, 2008);
 		}
 		if (page > 0) {
 			CustomButton* back;
-			CustomButton::create(hwnd, &back, "戻る", 60, 450, 1006);
+			CustomButton::create(hwnd, &back, "戻る", 60, 450, 2006);
 		}
 		CustomButton* ok;
-		CustomButton::create(hwnd, &ok, "確認", 140, 450, 1007);
+		CustomButton::create(hwnd, &ok, "確認", 140, 450, CANCEL);
 	}
 
 	static void redrawButton() {
@@ -362,29 +373,26 @@ public:
 		emotion = NORMAL;
 		dec = randRange(-9, 2);
 		json data = getHttp();
-		for (auto [i,sortie] : myfunc::with_index(data["variants"])) {
+		for (auto [i, sortie] : myfunc::with_index(data["variants"])) {
 			srell::smatch smatch;
 			srell::regex re(R"((?<=\().*(?=\)))");
 			srell::regex dub(R"((?<=").*(?="))");
 
 			std::string pl = sortie["node"].dump();
 			if (srell::regex_search(pl, smatch, re))
-				planet[i] =  translate[smatch[0]];
+				planet[i] = translate.at(smatch[0]);
 			pl = sortie["missionType"].dump();
 			if (srell::regex_search(pl, smatch, dub))
-				mission[i] = translate[smatch[0]];
+				mission[i] = translate.at(std::string(smatch[0]));
 			pl = sortie["modifier"].dump();
 			if (srell::regex_search(pl, smatch, dub))
 				modifier[i] = translate[smatch[0]];
 		}
-		//for (int i = 0; i < 3; i++) {
-		//	std::cout << planet[i] << "," << mission[i] << "," << modifier[i] << "\n";
-		//}
 	}
 	void addButton() override {
 		CustomButton::destroyFlag = false;
-			CustomButton* ok;
-			CustomButton::create(hwnd, &ok, "確認", 130, 450, 1007);
+		CustomButton* ok;
+		CustomButton::create(hwnd, &ok, "確認", 130, 450, CANCEL);
 	}
 	virtual bool drawFuki(Graphics* g, HDC hdcMem) override {
 		if (count == 0) {
@@ -398,12 +406,12 @@ public:
 		drawBack(g);
 		for (int i = 0; i < 3; i++) {
 			size = { 15, 190 + i * 80, 285,999 };
-			std::string te = std::to_string(i+1)+". "+planet[i] + " : " + mission[i];
-			std::string te2 ="\n"+modifier[i];
+			std::string te = std::to_string(i + 1) + ". " + planet[i] + " : " + mission[i];
+			std::string te2 = "\n" + modifier[i];
 			DrawText(hdcMem, TEXT(te.c_str()), -1, &size, DT_WORDBREAK);
 			DrawText(hdcMem, TEXT(te2.c_str()), -1, &size, DT_WORDBREAK);
 		}
-		
+
 		time--;
 		count++;
 		return time == 0 ? true : false;

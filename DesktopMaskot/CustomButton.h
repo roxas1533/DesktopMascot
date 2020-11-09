@@ -1,9 +1,10 @@
 #pragma once
-#include <Windows.h>
+#include "myfunc.h"
 #include <string>
 #include <map>
 #include "MYFONT.h"
 #include <memory>
+
 class CustomButton {
 public:
 	CustomButton(HWND hwnd, std::string text, int x, int y, int id) :hInst_((HINSTANCE)(LONG64)GetWindowLong(hwnd, GWL_HINSTANCE)), text(text) {
